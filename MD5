@@ -1,4 +1,4 @@
-fc39356baa2d4fef8b150158501e2dad *DESCRIPTION
+c3628407da3404fb87a66359b9bc64f5 *DESCRIPTION
 1ebbd3e34237af26da5dc08a4e440464 *LICENSE
 c8de14a2cf66286950802222d71ae88d *NAMESPACE
 4570a5ec24e532bd6695fa945dcef8ff *R/genintervals.R
@@ -6,7 +6,7 @@ c8de14a2cf66286950802222d71ae88d *NAMESPACE
 1cbba36c0e425add42d71e803dcd7ee0 *R/metaintervals.R
 c44858e8ad2b22a2ac17364386b596c2 *R/plotpint.R
 e4bb7ad5c3388d44e58d7b6c347978a6 *R/plotsint.R
-213c4995b0bb40fa8512480b42f4c2aa *README.md
+986f772035dc69b29fa15195a8ab6eb3 *README.md
 607a7d80e6e3c6e3ec0652f81003e772 *build/vignette.rds
 bbc07ec72cddb8d28f1c2a7ab322f031 *inst/doc/examples.R
 154167c7f5a23b12663b73b3ca4e28dd *inst/doc/examples.Rmd

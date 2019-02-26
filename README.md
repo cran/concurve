@@ -1,11 +1,20 @@
+Concurve
+================
 
-# Plotting Functions With The Concurve Package <img src="man/figures/logo.svg" align="right" width="120" />
+# Plot Interval Functions with the Concurve Package <img src="man/figures/logo.svg" align="right" width="120" />
 
-[![Build
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/concurve)](https://cran.r-project.org/package=concurve)
+![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](http://www.repostatus.org/badges/latest/active.svg) [![Build
 Status](https://travis-ci.org/Zadchow/concurve.svg?branch=master)](https://travis-ci.org/Zadchow/concurve)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/v8sp9x96dap2om9s?svg=true)](https://ci.appveyor.com/project/Zadchow/concurve)
 [![codecov](https://codecov.io/gh/Zadchow/concurve/branch/master/graph/badge.svg)](https://codecov.io/gh/Zadchow/concurve)
+![LICENSE](https://img.shields.io/cran/l/concurve.svg?style=flat)
+[![DOI](https://zenodo.org/badge/165464881.svg)](https://zenodo.org/badge/latestdoi/165464881)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/concurve)](https://cran.r-project.org/package=concurve)
+[![Rdoc](http://www.rdocumentation.org/badges/version/concurve)](http://www.rdocumentation.org/packages/concurve)
 
 ## A Single Interval Isn’t Enough
 
@@ -13,8 +22,20 @@ Interval estimates such as ~~confidence~~ **compatibility/consonance**
 intervals are now widely reported in many journals alongside the exact
 P-value of a statistical test and point estimate.
 
+<center>
+
+![](https://media.giphy.com/media/3K0BcXNzGuRin84NJN/giphy.gif)
+
+<p>
+
+[Source: Kristoffer Magnusson](https://rpsychologist.com/d3/CI/)
+
+</p>
+
+</center>
+
 While this is a large improvement over what constituted statistical
-reporting a decade ago, it is still largely inadequate.
+reporting in the past two decades, it is still largely inadequate.
 
 Take for example, the 95% compatibility interval. As many have stated
 before, there is nothing special about **95%**, yet we rarely see
@@ -24,26 +45,33 @@ compatibility interval is only a *slice* of a wide range of
 compatibility intervals at different levels. Reporting 95% intervals
 only promotes [cargo-cult
 statistics](https://rss.onlinelibrary.wiley.com/doi/10.1111/j.1740-9713.2018.01174.x)
-since there is not much thought behind the choice.(1)
+since there is not much thought behind the choice. (1)
 
 > “***Cargo-cult statistics*** – *the ritualistic miming of statistics
 > rather than conscientious practice*.” - Stark & Saltelli, 2018
 
 Thus, we propose that instead of only calculating ***one*** interval
 estimate, ***every*** interval associated with a compatibility level be
-calculated and plotted to form a function. (2-6)
+calculated, along with its corresponding P-value and S-value, and
+plotted to form a function. (2-8)
 
 This can be accomplished using the
 [**concurve**](https://github.com/Zadchow/concurve)</span> package in R.
 
-## Install the package
+## Install the Package from CRAN
+
+``` r
+install.packages("concurve")
+```
+
+## Install the Developer Version
 
 ``` r
 library(devtools)
 install_github("zadchow/concurve")
 ```
 
-## Check out the [articles](https://data.lesslikely.com/concurve/articles/) to see the package in action.
+## Check out the [Articles](https://data.lesslikely.com/concurve/articles/) to See the Package in Action.
 
 > "*Statistical software enables and promotes cargo-cult statistics.
 > Marketing and adoption of statistical software are driven by ease of
@@ -75,3 +103,9 @@ install_github("zadchow/concurve")
     distribution estimator of a parameter. *arXiv \[mathST\]*. 2007.
 6.  Schweder T, Hjort NL. Confidence and Likelihood\*. *Scand J Stat.*
     2002;29(2):309-332.
+7.  Amrhein V, Trafimow D, Greenland S. Inferential Statistics as
+    Descriptive Statistics: There is No Replication Crisis if We Don’t
+    Expect Replication. *Am Stat*. 2018
+8.  Greenland S. Valid P-values Behave Exactly As They Should. Some
+    misleading criticisms of P-values and their resolution with
+    S-values. *Am Stat*. 2018;18(136).
