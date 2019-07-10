@@ -1,14 +1,14 @@
-\name{meanintervals}
-\alias{meanintervals}
+\name{curve_mean}
+\alias{curve_mean}
 
-\title{Produce Consonance Intervals for Mean Differences
+\title{Computes consonance intervals for mean differences
 }
 \description{
 Computes thousands of consonance (confidence) intervals for the chosen parameter in a statistical test
-that compares means and places the interval limits for each interval level into a data frame along with the corresponding p-value and s-value.
+that compares means and places the interval limits for each interval level into a data frame along with the corresponding p-values and s-values.
 }
 \usage{
-meanintervals(x, y, data, paired = F, method = "default",
+curve_mean(x, y, data, paired = F, method = "default",
 replicates = 1000, steps = 10000)
 }
 
@@ -51,11 +51,16 @@ Rothman KJ, Greenland S, Lash TL, Others. Modern epidemiology. 2008.
 }
 
 \examples{
+
 # Simulate random data
-GroupA<-runif(100, min=0, max=100)
-GroupB<-runif(100, min=0, max=100)
 
-RandomData<-data.frame(GroupA, GroupB)
+GroupA <- runif(100, min = 0, max = 100)
+GroupB <- runif(100, min = 0, max = 100)
 
-bob<-meanintervals(GroupA, GroupB, RandomData)
+RandomData <- data.frame(GroupA, GroupB)
+
+bob <- curve_mean(GroupA, GroupB, RandomData)
+
+tibble::tibble(bob)
+
 }
