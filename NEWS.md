@@ -1,3 +1,16 @@
+# concurve 2.1.0
+
+## Major changes 
+* `ggconcurve()` now plots both the P-values and CI level using both y-axes when the type = "consonance". Previously, this was only possible via `plot_concurve()` (which uses base R graphics) because `ggplot2` had a bug in its last few versions, which inhibited proper transformations in the y-axis. 
+
+# concurve 2.0.1
+
+## Major changes 
+
+* `plot_concurve()` now has "measure" as an item which allows for ratio measures to be logarithmically scaled on the x axis. There are two options, "default", which is set as the default option and is for mean differences, and "ratio", which will result in the axis being logarithmically scaled. 
+* `plot_concurve()` also now has a "fill" option which will allow users to choose the color of the plot.
+
+
 # concurve 2.0
 
 ## Major changes 

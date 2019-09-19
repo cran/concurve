@@ -1,41 +1,66 @@
 plot_concurve <- function(type = "consonance",
                           data,
+                          measure = "default",
+                          intervals = FALSE,
                           title = "Consonance Function",
                           xlab = "Theta",
                           ylab1 = "P-value",
-                          ylab2 = "Confidence Level (%)") {
+                          ylab2 = "Confidence Level (%)",
+                          fontsize = 12,
+                          fill = "#239a9880") {
+
+  # Overall graph parameters
   par(
-    mar = c(4.9, 5, 3.5, 5),
+    ps = fontsize,
+    mar = c(4.5, 5, 3, 5),
     font.main = 1,
-    cex.main = 1.3,
-    cex.lab = 1.15
+    cex.main = 1,
+    cex.lab = 1
   )
+
+  # Consonance function
 
   if (type == "consonance") {
     with(
       data = data,
-      plot(lower.limit, pvalue,
-        xlim = c(min(lower.limit), max(upper.limit)),
-        panel.first = grid(ny = 0),
-        type = "l",
-        xlab = xlab,
-        ylab = ylab1,
-        main = title,
-        yaxt = "n",
-        las = 1
-      )
+      if (measure == "default") {
+        plot(lower.limit, pvalue,
+          xlim = c(min(lower.limit), max(upper.limit)),
+          panel.first = grid(ny = 0),
+          type = "l",
+          xlab = xlab,
+          ylab = ylab1,
+          main = title,
+          yaxt = "n",
+          las = 1
+        )
+      }
+      else if (measure == "ratio") {
+        plot(lower.limit, pvalue,
+          xlim = c(min(lower.limit), max(upper.limit)),
+          panel.first = grid(ny = 0),
+          type = "l",
+          xlab = xlab,
+          ylab = ylab1,
+          main = title,
+          yaxt = "n",
+          las = 1,
+          log = "x"
+        )
+      }
     )
+
     with(data = data, lines(upper.limit, pvalue))
 
     # Shade in area under the curve
 
     polygon(c(max(data$lower.limit), data$lower.limit),
       c(min(data$pvalue), data$pvalue),
-      col = "#239a9880", border = NA
+      col = fill, border = NA
     )
     polygon(c(min(data$upper.limit), data$upper.limit),
       c(min(data$pvalue), data$pvalue),
-      col = "#239a9880", border = NA
+      col = fill, border = NA
     )
     axis(
       side = 2, at = c(seq(from = 0, to = 1, by = .10)),
@@ -64,8 +89,11 @@ plot_concurve <- function(type = "consonance",
       side = 4, at = c(seq(from = 0, to = 100, by = 10)),
       tck = 1, lty = 2, col = "grey", las = 1
     )
-    text(par("usr") + 0.95, 28,
-      srt = -90, adj = 0, labels = "Consonance Level (%)", cex = 1.05,
+
+    # 0.95, 28
+
+    text(par("usr") + 1, 15,
+      srt = -90, adj = 0, labels = ylab2, cex = 1,
       xpd = TRUE
     )
     par(new = T)
@@ -75,7 +103,7 @@ plot_concurve <- function(type = "consonance",
     )
 
     # Labels for interval estimates and maximum likelihood
-
+    if (intervals == TRUE) {
     text(
       x = 1.27, y = 3,
       paste(
@@ -120,28 +148,49 @@ plot_concurve <- function(type = "consonance",
       ),
       cex = 0.93, col = "black"
     )
-  } else if (type == "surprisal") {
+    }
+  }
+
+  # Surprisal function
+
+  if (type == "surprisal") {
     with(
       data,
-      plot(lower.limit, svalue,
-        xlim = c(min(lower.limit), max(upper.limit)),
-        panel.first = grid(),
-        type = "l",
-        xlab = "Theta",
-        ylab = "S-value",
-        main = "Surpisal Function",
-        yaxt = "n",
-        las = 1
-      )
+      if (measure == "default") {
+        plot(lower.limit, svalue,
+          xlim = c(min(lower.limit), max(upper.limit)),
+          panel.first = grid(),
+          type = "l",
+          xlab = xlab,
+          ylab = "S-value (bits of information)",
+          main = title,
+          yaxt = "n",
+          las = 1
+        )
+      }
+      else if (measure == "ratio") {
+        plot(lower.limit, svalue,
+          xlim = c(min(lower.limit), max(upper.limit)),
+          panel.first = grid(),
+          type = "l",
+          xlab = xlab,
+          ylab = "S-value (bits of information)",
+          main = title,
+          yaxt = "n",
+          las = 1,
+          log = "x"
+        )
+      }
     )
+
     with(data, lines(upper.limit, svalue))
     polygon(c(max(data$lower.limit), data$lower.limit),
       c(max(data$svalue), data$svalue),
-      col = "#239a9880", border = NA
+      col = fill, border = NA
     )
     polygon(c(min(data$upper.limit), data$upper.limit),
       c(max(data$svalue), data$svalue),
-      col = "#239a9880", border = NA
+      col = fill, border = NA
     )
     axis(side = 2, lty = 2, col = "grey", las = 1)
     par(new = T)
