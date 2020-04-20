@@ -2,23 +2,14 @@
 % Please edit documentation in R/plot_compare.R
 \name{plot_compare}
 \alias{plot_compare}
-\title{Compares the P-Value (Consonance), S-value (Surprisal), and Likelihood Function via ggplot2}
+\title{Graph and Compare Consonance, Surprisal, and Likelihood Functions}
 \usage{
-plot_compare(
-  data1,
-  data2,
-  type = "c",
-  measure = "default",
-  nullvalue = FALSE,
-  position = "pyramid",
-  title = "Interval Functions",
+plot_compare(data1, data2, type = "c", measure = "default",
+  nullvalue = FALSE, position = "pyramid", title = "Interval Functions",
   subtitle = "The function displays intervals at every level.",
   xaxis = expression(Theta ~ "Range of Values"),
-  yaxis = "P-value",
-  color = "#000000",
-  fill1 = "#239a98",
-  fill2 = "#d46c5b"
-)
+  yaxis = expression(paste(italic(p), "-value")), color = "#000000",
+  fill1 = "#239a98", fill2 = "#EE6A50")
 }
 \arguments{
 \item{data1}{The first dataframe produced by one of the interval functions in which the
@@ -111,7 +102,12 @@ model <- lm(GroupA2 ~ GroupB2, data = RandomData2)
 
 randomframe <- curve_gen(model, "GroupB2")
 
-(plot_compare(intervalsdf[[1]], randomframe[[1]], type = "s"))
+plot_compare(intervalsdf[[1]], randomframe[[1]], type = "c")
 }
 
+}
+\seealso{
+\code{\link[=ggcurve]{ggcurve()}}
+
+\code{\link[=curve_compare]{curve_compare()}}
 }

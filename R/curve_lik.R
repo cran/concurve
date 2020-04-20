@@ -1,4 +1,4 @@
-#' Compute the Profile Likelihood Functions
+#' Compute Profile Likelihood Functions
 #'
 #' @param likobject An object from the ProfileLikelihood package
 #' @param data The dataframe that was used to create the likelihood
@@ -7,13 +7,15 @@
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
 #'
+#' @return A list with 2 items where the dataframe of values is in the first
+#' object, and the table for the values in the second if table = TRUE.
+#'
 #' @examples
 #'
 #' library(ProfileLikelihood)
 #' data(dataglm)
 #' xx <- profilelike.glm(y ~ x1 + x2, dataglm, profile.theta = "group", binomial("logit"))
 #' lik <- curve_lik(xx, dataglm)
-#' tibble::tibble(lik[[1]])
 curve_lik <- function(likobject, data, table = TRUE) {
   values <- likobject[[1]] # theta values
   likelihood <- likobject[[2]] # profile likelihoods

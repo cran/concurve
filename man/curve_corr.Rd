@@ -2,7 +2,7 @@
 % Please edit documentation in R/curve_corr.R
 \name{curve_corr}
 \alias{curve_corr}
-\title{Computes Consonance Intervals for Correlations}
+\title{Consonance Functions for Correlations}
 \usage{
 curve_corr(x, y, alternative, method, steps = 10000, table = TRUE)
 }
@@ -32,6 +32,11 @@ store them into a dataframe.}
 statistics should be generated. The default is TRUE and generates a table
 which is included in the list object.}
 }
+\value{
+A list with 3 items where the dataframe of values is in the first
+object, the values needed to calculate the density function in the second,
+and the table for the values in the third if table = TRUE.
+}
 \description{
 Computes consonance intervals to produce P- and S-value functions for
 correlational analysesusing the cor.test function in base R and places the
@@ -43,5 +48,4 @@ corresponding p-values and s-values.
 GroupA <- rnorm(50)
 GroupB <- rnorm(50)
 joe <- curve_corr(x = GroupA, y = GroupB, alternative = "two.sided", method = "pearson")
-tibble::tibble(joe[[1]])
 }

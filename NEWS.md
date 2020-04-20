@@ -1,3 +1,36 @@
+# concurve 2.5.0
+
+## Major changes 
+* `curve_meta()` can now handle complex data structures from `metafor` with clustered data.
+* `curve_gen()` can now handle ANOVAs and robust linear regressions from the `MASS` package.
+* `concurve` is now intergrated with the `cowplot` package for easier graphing. 
+* removed `tibble::tibble()` integration due to breakage in code. 
+* `expand_scale()` has been replaced with `expansion()` within the inner workings of `ggcurve()` and `plot_compare()` due to the former function (`expand_scale()`) being deprecated.
+
+
+# concurve 2.4.1
+
+## Major changes 
+* New function `curve_lmer()` for mixed-effects models 
+* Fixed a bug where `curve_meta()` could not utilize `rma.mh()` or `rma.peto()` from `metafor`.
+
+# concurve 2.4.0
+
+## Major changes 
+* `curve_boot()` can utilize parametric Bca bootstrap methods to compute functions.
+* Corrected error where order of labels in columns for `curve_boot()` tables was incorrect.
+* Corrected error where order of labels in columns for `curve_meta()` tables was incorrect.
+* Set minimum version of `R` to 3.5.0.
+* included `install.packages("concurve", dep = TRUE)` as solution to installation problems for some individuals. 
+* Removed `MASS`, `compiler`, and `Rlang` from `DESCRIPTION` `IMPORTS`, since these weren't used.
+* Wrote new unit tests examing the class of each of the objects created from the functions. 
+
+
+## Minor changes 
+* `ggcurve()` theme has been changed from `theme_bw()` to `theme_minimal()`.
+* Several new examples in the "[Examples in R](https://data.lesslikely.com/concurve/articles/examples.html)" article.
+
+
 # concurve 2.3.0
 
 ## Major changes 

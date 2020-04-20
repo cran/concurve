@@ -1,4 +1,4 @@
-#' Mean Interval Consonance Function
+#' Consonance Functions For Mean Differences
 #'
 #' Computes thousands of consonance (confidence) intervals for the chosen
 #' parameter in a statistical test that compares means and places the interval
@@ -27,6 +27,10 @@
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
 #'
+#' @return A list with 3 items where the dataframe of values is in the first
+#' object, the values needed to calculate the density function in the second,
+#' and the table for the values in the third if table = TRUE.
+#'
 #' @examples
 #'
 #' # Simulate random data
@@ -34,7 +38,6 @@
 #' GroupB <- runif(100, min = 0, max = 100)
 #' RandomData <- data.frame(GroupA, GroupB)
 #' bob <- curve_mean(GroupA, GroupB, RandomData)
-#' tibble::tibble(bob[[1]])
 curve_mean <- function(x, y, data, paired = F, method = "default", replicates = 1000, steps = 10000, table = TRUE) {
   if (is.numeric(x) != TRUE) {
     stop("Error: 'x' must be a numeric vector")

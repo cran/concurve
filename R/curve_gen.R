@@ -1,5 +1,4 @@
-#' General Consonance Functions Using Profile Likelihood, Wald,
-#' or the bootstrap method for linear models.
+#' Consonance Functions For Linear Models, Generalized Linear Models, and Robust Linear Models
 #'
 #' Computes thousands of consonance (confidence) intervals for
 #' the chosen parameter in the selected model
@@ -12,14 +11,15 @@
 #' @param var The variable of interest from the model (coefficients, intercept)
 #' for which the intervals are to be produced.
 #' @param method Chooses the method to be used to calculate the
-#' consonance intervals. There are currently four methods:
-#' "default", "wald", "lm", and "boot". The "default" method uses the profile
+#' consonance intervals. There are currently threo methods:
+#' "lm", "rlm", "glm" and "aov". The "lm" method uses the profile
 #' likelihood method to compute intervals and can be used for models created by
-#' the 'lm' function. The "wald" method is typicallywhat most people are
+#' the 'lm' function. It is typically what most people are
 #' familiar with when computing intervals based on the calculated standard error.
-#' The "lm" method allows this function to be used for specific scenarios like
-#' logistic regression and the 'glm' function. The "boot" method allows for
-#' bootstrapping at certain levels.
+#' The "rlm" method is designed for usage with the "rlm" function from the MASS
+#' package.
+#' The "glm" method allows this function to be used for specific scenarios like
+#' logistic regression and the 'glm' function.
 #' @param steps Indicates how many consonance intervals are to be calculated at
 #' various levels. For example, setting this to 100 will produce 100 consonance
 #' intervals from 0 to 100. Setting this to 10000 will produce more consonance
@@ -30,6 +30,10 @@
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
 #'
+#' @return A list with 3 items where the dataframe of values is in the first
+#' object, the values needed to calculate the density function in the second,
+#' and the table for the values in the third if table = TRUE.
+#'
 #' @examples
 #'
 #' \donttest{
@@ -39,10 +43,9 @@
 #' RandomData <- data.frame(GroupA, GroupB)
 #' rob <- lm(GroupA ~ GroupB, data = RandomData)
 #' bob <- curve_gen(rob, "GroupB")
-#' tibble::tibble(bob[[1]])
 #' }
 #'
-curve_gen <- function(model, var, method = "wald", steps = 1000, table = TRUE) {
+curve_gen <- function(model, var, method = "lm", steps = 1000, table = TRUE) {
   if (is.character(method) != TRUE) {
     stop("Error: 'method' must be a character vector")
   }
@@ -52,10 +55,14 @@ curve_gen <- function(model, var, method = "wald", steps = 1000, table = TRUE) {
 
   intrvls <- (1:(steps - 1)) / steps
 
-  if (method == "wald") {
+  if (method == "lm") {
     results <- pbmclapply(intrvls, FUN = function(i) confint.default(object = model, level = i)[var, ], mc.cores = getOption("mc.cores", 1L))
+  } else if (method == "rlm") {
+    results <- pbmclapply(intrvls, FUN = function(i) confint(object = model, level = i)[var, ], mc.cores = getOption("mc.cores", 1L))
   } else if (method == "glm") {
     results <- pbmclapply(intrvls, FUN = function(i) confint(object = model, level = i, trace = FALSE)[var, ], mc.cores = getOption("mc.cores", 1L))
+  } else if (method == "aov") {
+    results <- pbmclapply(intrvls, FUN = function(i) confint(object = model, level = i)[var, ], mc.cores = getOption("mc.cores", 1L))
   }
 
   df <- data.frame(do.call(rbind, results))

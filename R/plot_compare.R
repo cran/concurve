@@ -1,4 +1,4 @@
-#' Compares the P-Value (Consonance), S-value (Surprisal), and Likelihood Function via ggplot2
+#' Graph and Compare Consonance, Surprisal, and Likelihood Functions
 #'
 #' Compares the p-value/s-value, and likelihood functions using ggplot2 graphics.
 #'
@@ -74,17 +74,20 @@
 #'
 #' randomframe <- curve_gen(model, "GroupB2")
 #'
-#' (plot_compare(intervalsdf[[1]], randomframe[[1]], type = "s"))
+#' plot_compare(intervalsdf[[1]], randomframe[[1]], type = "c")
 #' }
+#'
+#' @seealso [ggcurve()]
+#' @seealso [curve_compare()]
 #'
 plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalue = FALSE, position = "pyramid",
                          title = "Interval Functions",
                          subtitle = "The function displays intervals at every level.",
                          xaxis = expression(Theta ~ "Range of Values"),
-                         yaxis = "P-value",
+                         yaxis = expression(paste(italic(p), "-value")),
                          color = "#000000",
                          fill1 = "#239a98",
-                         fill2 = "#d46c5b") {
+                         fill2 = "#EE6A50") {
   cols <- c(fill1, fill2)
 
   # Consonance Curve -----------------------------------------------------
@@ -117,9 +120,6 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     if (is.character(subtitle) != TRUE) {
       stop("Error: 'subtitle' must be a string.")
     }
-    if (is.character(yaxis) != TRUE) {
-      stop("Error: 'yaxis' must be a string.")
-    }
     if (is.character(fill1) != TRUE) {
       stop("Error: 'fill1' must be a string for the color.")
     }
@@ -134,10 +134,10 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         color = color
       ) +
       geom_ribbon(aes(x = lower.limit, ymin = min(pvalue), ymax = pvalue, fill = fill1),
-        alpha = 0.30
+        alpha = 0.20
       ) +
       geom_ribbon(aes(x = upper.limit, ymin = min(pvalue), ymax = pvalue, fill = fill1),
-        alpha = 0.30
+        alpha = 0.20
       ) +
       geom_line(
         data = data2, aes(x = lower.limit, y = pvalue),
@@ -149,15 +149,15 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       ) +
       geom_ribbon(
         data = data2, aes(x = lower.limit, ymin = min(pvalue), ymax = pvalue, fill = fill2),
-        alpha = 0.30
+        alpha = 0.20
       ) +
       geom_ribbon(
         data = data2, aes(x = upper.limit, ymin = min(pvalue), ymax = pvalue, fill = fill2),
-        alpha = 0.30
+        alpha = 0.20
       ) +
-      theme_bw() +
+      theme_minimal() +
       labs(
-        title = title,
+        title = "Consonance Curves",
         subtitle = subtitle,
         x = xaxis,
         y = yaxis
@@ -171,7 +171,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         legend.background = element_blank(),
         legend.position = c(.998, .95),
         legend.justification = c("right", "top"),
-        legend.key = element_rect(linetype = 1),
+        legend.key = element_rect(linetype = 1, color = alpha(cols, 0.20)),
         legend.key.size = unit(0.495, "cm")
       ) +
       scale_fill_manual(
@@ -198,7 +198,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       {
         if (position == "inverted") {
           scale_y_reverse(
-            expand = expand_scale(mult = c(0.01, 0.025)),
+            expand = expansion(mult = c(0.01, 0.025)),
             breaks = seq(0, 1, 0.10),
             sec.axis = sec_axis(~ (1 - .) * 100, name = "Levels for CI (%)", breaks = seq(0, 100, 10))
           )
@@ -207,7 +207,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       {
         if (position == "pyramid") {
           scale_y_continuous(
-            expand = expand_scale(mult = c(0.01, 0.025)),
+            expand = expansion(mult = c(0.01, 0.025)),
             breaks = seq(0, 1, 0.10),
             sec.axis = sec_axis(~ (1 - .) * 100, name = "Levels for CI (%)", breaks = seq(0, 100, 10))
           )
@@ -217,12 +217,12 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         if (measure == "default") {
           annotate("segment",
             x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         } else if (measure == "ratio") {
           annotate("segment",
             x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         }
       }
@@ -253,9 +253,6 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     if (is.character(subtitle) != TRUE) {
       stop("Error: 'subtitle' must be a string.")
     }
-    if (is.character(yaxis) != TRUE) {
-      stop("Error: 'yaxis' must be a string.")
-    }
     if (is.character(fill1) != TRUE) {
       stop("Error: 'fill1' must be a string for the color.")
     }
@@ -270,10 +267,10 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         color = color
       ) +
       geom_ribbon(aes(x = lower.limit, ymin = max(svalue), ymax = svalue, fill = fill1),
-        alpha = 0.30
+        alpha = 0.20
       ) +
       geom_ribbon(aes(x = upper.limit, ymin = max(svalue), ymax = svalue, fill = fill1),
-        alpha = 0.30
+        alpha = 0.20
       ) +
       geom_line(
         data = data2, aes(x = lower.limit, y = svalue),
@@ -285,19 +282,19 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       ) +
       geom_ribbon(
         data = data2, aes(x = lower.limit, ymin = max(svalue), ymax = svalue, fill = fill2),
-        alpha = 0.30
+        alpha = 0.20
       ) +
       geom_ribbon(
         data = data2, aes(x = upper.limit, ymin = max(svalue), ymax = svalue, fill = fill2),
-        fill = fill2, alpha = 0.30
+        fill = fill2, alpha = 0.20
       ) +
       labs(
-        title = title,
+        title = "Surprisal Functions",
         subtitle = subtitle,
         x = xaxis,
         y = "S-value \n(Bits of Information)"
       ) +
-      theme_bw() +
+      theme_minimal() +
       theme(
         plot.title = element_text(size = 12),
         plot.subtitle = element_text(size = 11),
@@ -307,7 +304,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         legend.background = element_blank(),
         legend.position = c(.998, .25),
         legend.justification = c("right", "top"),
-        legend.key = element_rect(linetype = 1),
+        legend.key = element_rect(linetype = 1, color = alpha(cols, 0.20)),
         legend.key.size = unit(0.495, "cm")
       ) +
       scale_fill_manual(
@@ -354,9 +351,6 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     if (is.character(subtitle) != TRUE) {
       stop("Error: 'subtitle' must be a string.")
     }
-    if (is.character(yaxis) != TRUE) {
-      stop("Error: 'yaxis' must be a string.")
-    }
     if (is.character(fill1) != TRUE) {
       stop("Error: 'fill1' must be a string for the color.")
     }
@@ -366,16 +360,16 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
 
     ggplot(data = data1, mapping = aes(x = values, y = support)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(support), ymax = support, fill = fill1), alpha = 0.30) +
+      geom_ribbon(aes(x = values, ymin = min(support), ymax = support, fill = fill1), alpha = 0.20) +
       geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = min(support), ymax = support, fill = fill2), alpha = 0.30) +
+      geom_ribbon(data = data2, aes(x = values, ymin = min(support), ymax = support, fill = fill2), alpha = 0.20) +
       labs(
         title = "Relative Likelihood Functions",
         subtitle = subtitle,
         x = xaxis,
         y = "Relative Likelihood"
       ) +
-      theme_bw() +
+      theme_minimal() +
       theme(
         plot.title = element_text(size = 12),
         plot.subtitle = element_text(size = 11),
@@ -385,7 +379,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         legend.background = element_blank(),
         legend.position = c(.998, .95),
         legend.justification = c("right", "top"),
-        legend.key = element_rect(linetype = 1),
+        legend.key = element_rect(linetype = 1, color = alpha(cols, 0.20)),
         legend.key.size = unit(0.495, "cm")
       ) +
       scale_fill_manual(
@@ -406,17 +400,17 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       {
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
-      scale_y_continuous(expand = expand_scale(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
+      scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
       if (nullvalue == TRUE) {
         if (measure == "default") {
           annotate("segment",
             x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         } else if (measure == "ratio") {
           annotate("segment",
             x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         }
       }
@@ -442,9 +436,6 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     if (is.character(subtitle) != TRUE) {
       stop("Error: 'subtitle' must be a string.")
     }
-    if (is.character(yaxis) != TRUE) {
-      stop("Error: 'yaxis' must be a string.")
-    }
     if (is.character(fill1) != TRUE) {
       stop("Error: 'fill1' must be a string for the color.")
     }
@@ -454,16 +445,16 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
 
     ggplot(data = data1, mapping = aes(x = values, y = loglikelihood)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill1), alpha = 0.30) +
+      geom_ribbon(aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill1), alpha = 0.20) +
       geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill2), alpha = 0.30) +
+      geom_ribbon(data = data2, aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill2), alpha = 0.20) +
       labs(
-        title = "Log Likelihood Function",
+        title = "Log-Likelihood Function",
         subtitle = subtitle,
         x = xaxis,
-        y = "Log Likelihood"
+        y = "Log-Likelihood"
       ) +
-      theme_bw() +
+      theme_minimal() +
       theme(
         plot.title = element_text(size = 12),
         plot.subtitle = element_text(size = 11),
@@ -473,7 +464,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         legend.background = element_blank(),
         legend.position = c(.998, .95),
         legend.justification = c("right", "top"),
-        legend.key = element_rect(linetype = 1),
+        legend.key = element_rect(linetype = 1, color = alpha(cols, 0.20)),
         legend.key.size = unit(0.495, "cm")
       ) +
       scale_fill_manual(
@@ -494,17 +485,17 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       {
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
-      scale_y_continuous(expand = expand_scale(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
+      scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
       if (nullvalue == TRUE) {
         if (measure == "default") {
           annotate("segment",
             x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         } else if (measure == "ratio") {
           annotate("segment",
             x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         }
       }
@@ -530,9 +521,6 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     if (is.character(subtitle) != TRUE) {
       stop("Error: 'subtitle' must be a string.")
     }
-    if (is.character(yaxis) != TRUE) {
-      stop("Error: 'yaxis' must be a string.")
-    }
     if (is.character(fill1) != TRUE) {
       stop("Error: 'fill1' must be a string for the color.")
     }
@@ -542,16 +530,16 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
 
     ggplot(data = data1, mapping = aes(x = values, y = likelihood)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill1), alpha = 0.30) +
+      geom_ribbon(aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill1), alpha = 0.20) +
       geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill2), alpha = 0.30) +
+      geom_ribbon(data = data2, aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill2), alpha = 0.20) +
       labs(
         title = "Likelihood Function",
         subtitle = subtitle,
         x = xaxis,
         y = "Likelihood"
       ) +
-      theme_bw() +
+      theme_minimal() +
       theme(
         plot.title = element_text(size = 12),
         plot.subtitle = element_text(size = 11),
@@ -561,7 +549,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         legend.background = element_blank(),
         legend.position = c(.998, .95),
         legend.justification = c("right", "top"),
-        legend.key = element_rect(linetype = 1),
+        legend.key = element_rect(linetype = 1, color = alpha(cols, 0.20)),
         legend.key.size = unit(0.495, "cm")
       ) +
       scale_fill_manual(
@@ -582,17 +570,17 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
       {
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
-      scale_y_continuous(expand = expand_scale(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
+      scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
       if (nullvalue == TRUE) {
         if (measure == "default") {
           annotate("segment",
             x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         } else if (measure == "ratio") {
           annotate("segment",
             x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.3, size = .75, linetype = 1
+            color = "#990000", alpha = 0.4, size = .75, linetype = 3
           )
         }
       }
@@ -617,9 +605,6 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     if (is.character(subtitle) != TRUE) {
       stop("Error: 'subtitle' must be a string.")
     }
-    if (is.character(yaxis) != TRUE) {
-      stop("Error: 'yaxis' must be a string.")
-    }
     if (is.character(fill1) != TRUE) {
       stop("Error: 'fill1' must be a string for the color.")
     }
@@ -629,16 +614,16 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
 
     ggplot(data = data1, mapping = aes(x = values, y = deviancestat)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill1), alpha = 0.30) +
+      geom_ribbon(aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill1), alpha = 0.20) +
       geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill2), alpha = 0.30) +
+      geom_ribbon(data = data2, aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill2), alpha = 0.20) +
       labs(
         title = "Deviance Functions",
         subtitle = subtitle,
         x = xaxis,
         y = "Deviance Statistic \n2ln(MLR)"
       ) +
-      theme_bw() +
+      theme_minimal() +
       theme(
         plot.title = element_text(size = 12),
         plot.subtitle = element_text(size = 11),
@@ -648,7 +633,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
         legend.background = element_blank(),
         legend.position = c(.998, .35),
         legend.justification = c("right", "top"),
-        legend.key = element_rect(linetype = 1),
+        legend.key = element_rect(linetype = 1, color = alpha(cols, 0.20)),
         legend.key.size = unit(0.495, "cm")
       ) +
       scale_fill_manual(

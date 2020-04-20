@@ -2,9 +2,10 @@
 % Please edit documentation in R/curve_meta.R
 \name{curve_meta}
 \alias{curve_meta}
-\title{Meta-analytic Consonance Function}
+\title{Consonance Functions For Meta-Analytic Data}
 \usage{
-curve_meta(x, measure = "default", steps = 10000, table = TRUE)
+curve_meta(x, measure = "default", method = "uni", robust = FALSE,
+  cluster = NULL, adjust = FALSE, steps = 1000, table = TRUE)
 }
 \arguments{
 \item{x}{Object where the meta-analysis parameters are stored, typically a
@@ -16,6 +17,20 @@ logarithmically transformed values and convert them back to normal values in the
 This is typically a setting used for binary outcomes such as risk ratios,
 hazard ratios, and odds ratios.}
 
+\item{method}{Indicates which meta-analysis metafor function is being used.
+Currently supports rma.uni ("uni"), which is the default, rma.mh ("mh"),
+and rma.peto ("peto")}
+
+\item{robust}{a logical indicating whether to produce cluster robust interval estimates
+Default is FALSE.}
+
+\item{cluster}{a vector specifying a clustering variable to use for
+constructing the sandwich estimator of the variance-covariance matrix.
+Default setting is NULL.}
+
+\item{adjust}{logical indicating whether a small-sample correction should
+be applied to the variance-covariance matrix. Default is FALSE.}
+
 \item{steps}{Indicates how many consonance intervals are to be calculated at
 various levels. For example, setting this to 100 will produce 100 consonance
 intervals from 0 to 100. Setting this to 10000 will produce more consonance
@@ -26,6 +41,11 @@ store them into a dataframe.}
 \item{table}{Indicates whether or not a table output with some relevant
 statistics should be generated. The default is TRUE and generates a table
 which is included in the list object.}
+}
+\value{
+A list with 3 items where the dataframe of values is in the first
+object, the values needed to calculate the density function in the second,
+and the table for the values in the third if table = TRUE.
 }
 \description{
 Computes thousands of consonance (confidence) intervals for the chosen
@@ -87,6 +107,4 @@ res <- rma(yi, vi,
 # Calculate the intervals using the metainterval function
 
 metaf <- curve_meta(res)
-
-tibble::tibble(metaf[[1]])
 }

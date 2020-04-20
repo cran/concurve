@@ -2,23 +2,14 @@
 % Please edit documentation in R/ggcurve.R
 \name{ggcurve}
 \alias{ggcurve}
-\title{Plots the P-Value (Consonance), S-value (Surprisal),
-and Likelihood Function via ggplot2}
+\title{Plots Consonance, Surprisal, and Likelihood Functions}
 \usage{
-ggcurve(
-  data,
-  type = "c",
-  measure = "default",
-  levels = 0.95,
-  nullvalue = FALSE,
-  position = "pyramid",
-  title = "Interval Function",
+ggcurve(data, type = "c", measure = "default", levels = 0.95,
+  nullvalue = FALSE, position = "pyramid", title = "Interval Function",
   subtitle = "The function displays intervals at every level.",
   xaxis = expression(Theta ~ "Range of Values"),
-  yaxis = "P-value",
-  color = "#000000",
-  fill = "#239a98"
-)
+  yaxis = expression(paste(italic(p), "-value")), color = "#000000",
+  fill = "#239a98")
 }
 \arguments{
 \item{data}{The dataframe produced by one of the interval functions
@@ -89,7 +80,7 @@ By default, it is set to fill = "#239a98". The inputs must be in quotes. For exa
 ggcurve(type = "c", data = x, fill = "#333333").}
 }
 \value{
-Plot with intervals at every consonance level graphed with their corresponding
+A plot with intervals at every consonance level graphed with their corresponding
 p-values and compatibility levels.
 }
 \description{
@@ -110,5 +101,8 @@ GroupB <- rnorm(500)
 RandomData <- data.frame(GroupA, GroupB)
 
 intervalsdf <- curve_mean(GroupA, GroupB, data = RandomData, method = "default")
-(function1 <- ggcurve(type = "c", intervalsdf[[1]]))
+ggcurve(type = "c", intervalsdf[[1]], nullvalue = TRUE)
+}
+\seealso{
+\code{\link[=plot_compare]{plot_compare()}}
 }

@@ -1,4 +1,4 @@
-#' Computes Consonance Intervals for Correlations
+#' Consonance Functions for Correlations
 #'
 #' Computes consonance intervals to produce P- and S-value functions for
 #' correlational analysesusing the cor.test function in base R and places the
@@ -25,12 +25,15 @@
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
 #'
+#' @return A list with 3 items where the dataframe of values is in the first
+#' object, the values needed to calculate the density function in the second,
+#' and the table for the values in the third if table = TRUE.
+#'
 #' @examples
 #'
 #' GroupA <- rnorm(50)
 #' GroupB <- rnorm(50)
 #' joe <- curve_corr(x = GroupA, y = GroupB, alternative = "two.sided", method = "pearson")
-#' tibble::tibble(joe[[1]])
 curve_corr <- function(x, y, alternative, method, steps = 10000, table = TRUE) {
   if (is.numeric(x) != TRUE) {
     stop("Error: 'x' must be a numeric vector")

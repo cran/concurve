@@ -1,6 +1,8 @@
 ---
 title: "Examples in R"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 bibliography: references.bib
 link-citations: yes
 csl: american-medical-association.csl
@@ -12,20 +14,22 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-	message = TRUE,
-	warning = TRUE,
-	collapse = TRUE,
-	comment = "#>"
+  message = TRUE,
+  warning = TRUE,
+  collapse = TRUE,
+  comment = "#>"
 )
 ```
 
-## Introduction
+# Introduction
 
 Here I show how to produce _P_-value, _S_-value, likelihood, and deviance functions with the `concurve` package using fake data and data from real studies. Simply put, these functions are rich sources of information for scientific inference and the image below, taken from Xie & Singh, 2013[@xie2013isr] displays why. 
 
-<img src="figures/densityfunction.png" align="center" width="750" />
+<img src="densityfunction.png" align="center" width="750" />
 
 For a more extensive discussion of these concepts, see the following references. [@birnbaum1961ams; @chow2019asb; @fraser2017arsa; @fraser2019as; @Poole1987-nb; @poole1987ajph; @Schweder2002-vh; @schweder2016; @Singh2007-zr; @Sullivan1990-ha; @whitehead1993sm; @xie2013isr; @rothman2008me]
+
+# Simple Models
 
 To get started, we could generate some normal data and combine two vectors in a dataframe
 
@@ -48,33 +52,33 @@ intervalsdf <- curve_mean(GroupA, GroupB,
 Each of the functions within `concurve` will generally produce a list with three items, and the first will usually contain the function of interest. 
 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
-tibble::tibble(intervalsdf[[1]])
+head(intervalsdf[[1]], 10)
 ```
 
-We can view the function using the `ggcurve()` function. The two basic arguments that must be provided are the data argument and the "type" argument. To plot a consonance function, we would write "c". 
+We can view the function using the `ggcurve()` function. The two basic arguments that must be provided are the data argument and the "type" argument. To plot a consonance function, we would write "`c`". 
 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
-(function1 <- ggcurve(data = intervalsdf[[1]], type = "c"))
+(function1 <- ggcurve(data = intervalsdf[[1]], type = "c", nullvalue = TRUE))
 ```
 
-We can see that the consonance "curve" is every interval estimate plotted, and provides the _P_-values, CIs, along with the median unbiased estimate It can be defined as such,
+We can see that the consonance "curve" is every interval estimate plotted, and provides the _P_-values, CIs, along with the **median unbiased estimate** It can be defined as such,
 
 $$C V_{n}(\theta)=1-2\left|H_{n}(\theta)-0.5\right|=2 \min \left\{H_{n}(\theta), 1-H_{n}(\theta)\right\}$$
 
 Its information counterpart, the surprisal function, can be constructed by taking the $-log_{2}$ of the _P_-value.[@chow2019asb; @greenland2019as; @Shannon1948-uq]
 
-To view the surprisal function, we simply change the type to "s". 
+To view the surprisal function, we simply change the type to "`s`". 
 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
 (function1 <- ggcurve(data = intervalsdf[[1]], type = "s"))
 ```
 
 
-We can also view the consonance distribution by changing the type to "cdf", which is a cumulative probability distribution. The point at which the curve reaches 50% is known as the "median unbiased estimate". It is the same estimate that is typically at the peak of the _P_-value curve from above. 
+We can also view the consonance distribution by changing the type to "`cdf`", which is a cumulative probability distribution. The point at which the curve reaches 50% is known as the "**median unbiased estimate**". It is the same estimate that is typically at the peak of the _P_-value curve from above. 
 
 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
-(function1s <- ggcurve(data = intervalsdf[[2]], type = "cdf"))
+(function1s <- ggcurve(data = intervalsdf[[2]], type = "cdf", nullvalue = TRUE))
 ```
 
 We can also get relevant statistics that show the range of values by using the `curve_table()` function. There are several formats that can be exported such as .docx, .ppt, and TeX. 
@@ -97,7 +101,7 @@ model <- lm(GroupA2 ~ GroupB2, data = RandomData2)
 randomframe <- curve_gen(model, "GroupB2")
 ```
 
-Once again, we'll plot this data with `ggcurve()`. We can also indicate whether we want certain interval estimates to be plotted in the function with the "levels" argument. If we wanted to plot the 50%, 75%, and 95% intervals, we'd provide the argument this way: 
+Once again, we'll plot this data with `ggcurve()`. We can also indicate whether we want certain interval estimates to be plotted in the function with the "`levels`" argument. If we wanted to plot the **50**%, **75**%, and **95**% intervals, we'd provide the argument this way: 
 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
 (function2 <- ggcurve(type = "c", randomframe[[1]], levels = c(0.50, 0.75, 0.95), nullvalue = TRUE))
@@ -114,7 +118,13 @@ Now that we have two datasets and two functions, we can compare them using the `
 
 This function will provide us with the area that is shared between the curve, along with a ratio of overlap to non-overlap. 
 
-We can also do this for the surprisal function simply by changing type to "s".
+Another way to compare the functions is to use the `cowplot`  `plot_grid()` function. 
+
+```{r echo=TRUE}
+cowplot::plot_grid(function1, function2)
+```
+
+We can also do this for the surprisal function simply by changing `type` to "`s`".
 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
 (curve_compare(
@@ -125,9 +135,10 @@ We can also do this for the surprisal function simply by changing type to "s".
 
 It's clear that the outputs have changed and indicate far more overlap than before.
 
+
 # Constructing Functions From Single Intervals
 
-We can also take a set of confidence limits and use them to construct a consonance, surprisal, likelihood or deviance function using the `curve_rev()` function. 
+We can also take a set of confidence limits and use them to construct a consonance, surprisal, likelihood or deviance function using the `curve_rev()` function. This method is computed from the approximate normal distribution. 
 
 Here, we'll use two epidemiological studies[@brown2017j; @brown2017jcp] that studied the impact of SSRI exposure in pregnant mothers, and the rate of autism in children. 
 
@@ -136,7 +147,7 @@ Both of these studies suggested a null effect of SSRI exposure on autism rates i
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
 curve1 <- curve_rev(point = 1.7, LL = 1.1, UL = 2.6, type = "c", measure = "ratio", steps = 10000)
 (ggcurve(data = curve1[[1]], type = "c", measure = "ratio", nullvalue = TRUE))
-curve2 <- curve_rev(point = 1.61, LL = 0.997, UL = 2.59,type = "c", measure = "ratio", steps = 10000)
+curve2 <- curve_rev(point = 1.61, LL = 0.997, UL = 2.59, type = "c", measure = "ratio", steps = 10000)
 (ggcurve(data = curve2[[1]], type = "c", measure = "ratio", nullvalue = TRUE))
 ```
 
@@ -147,7 +158,7 @@ We can also see this by plotting the likelihood functions via the `curve_rev()` 
 ```{r echo=TRUE, fig.height=4.5, fig.width=6}
 lik1 <- curve_rev(point = 1.7, LL = 1.1, UL = 2.6, type = "l", measure = "ratio", steps = 10000)
 (ggcurve(data = lik1[[1]], type = "l1", measure = "ratio", nullvalue = TRUE))
-lik2 <- curve_rev(point = 1.61, LL = 0.997, UL = 2.59,type = "l", measure = "ratio", steps = 10000)
+lik2 <- curve_rev(point = 1.61, LL = 0.997, UL = 2.59, type = "l", measure = "ratio", steps = 10000)
 (ggcurve(data = lik2[[1]], type = "l1", measure = "ratio", nullvalue = TRUE))
 ```
 
@@ -169,119 +180,6 @@ and the consonance functions
 ))
 ```
 
-# The Bootstrap and Consonance Functions 
-
-Some authors have shown that the bootstrap distribution is equal to the confidence distribution because it meets the definition of a consonance distribution.[@efron1994; @efron2018; @xie2013isr] The bootstrap distribution and the asymptotic consonance distribution would be defined as: 
-
-$$H_{n}(\theta)=1-P\left(\hat{\theta}-\hat{\theta}^{*} \leq \hat{\theta}-\theta | \mathbf{x}\right)=P\left(\hat{\theta}^{*} \leq \theta | \mathbf{x}\right)$$
-
-Certain bootstrap methods such as the BCa method and _t_-bootstrap method also yield second order accuracy of consonance distributions. 
-
-$$H_{n}(\theta)=1-P\left(\frac{\hat{\theta}^{*}-\hat{\theta}}{\widehat{S E}^{*}\left(\hat{\theta}^{*}\right)} \leq \frac{\hat{\theta}-\theta}{\widehat{S E}(\hat{\theta})} | \mathbf{x}\right)$$
-
-Here, I demonstrate how to use these particular bootstrap methods to arrive at consonance curves and densities. 
-
-We'll use the Iris dataset and construct a function that'll yield a parameter of interest.
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-iris <- datasets::iris
-foo <- function(data, indices) {
-  dt <- data[indices, ]
-  c(
-    cor(dt[, 1], dt[, 2], method = "p")
-  )
-}
-```
-
-We can now use the `curve_boot()` method to construct a function. The default method used for this function is the "BCa" method provided by the [`bcaboot`](https://cran.r-project.org/package=bcaboot) package.[@efron2018] 
-
-```{r include=FALSE}
-y <- curve_boot(data = iris, func = foo, method = "bca", replicates = 2000, steps = 1000)
-```
-
-I will suppress the output of the function because it is unnecessarily long. But we've placed all the estimates into a list object called y. 
-
-The first item in the list will be the consonance distribution constructed by typical means, while the third item will be the bootstrap approximation to the consonance distribution. 
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-ggcurve(data = y[[1]])
-ggcurve(data = y[[3]])
-```
-
-We can also print out a table for TeX documents
-
-```{r echo=TRUE, fig.height=2, fig.width=4}
-(gg <- curve_table(data = y[[1]], format = "image"))
-```
-
-More bootstrap replications will lead to a smoother function. But for now, we can compare these two functions to see how similar they are. 
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-plot_compare(y[[1]], y[[3]])
-```
-
-The densities can also be calculated accurately using the _t_-bootstrap method. Here we use a different dataset to show this
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-library(Lock5Data)
-dataz <- data(CommuteAtlanta)
-func = function(data, index) {
-  x <- as.numeric(unlist(data[1]))
-  y <- as.numeric(unlist(data[2]))
-  return(mean(x[index]) - mean(y[index]))
-}
-```
-
-Our function is a simple mean difference. This time, we'll set the method to "t" for the _t_-bootstrap method
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-z <- curve_boot(data = CommuteAtlanta, func = func, method = "t", replicates = 2000, steps = 1000)
-ggcurve(data = z[[1]])
-ggcurve(data = z[[2]], type = "cd")
-```
-
-The consonance curve and density are nearly identical. With more bootstrap replications, they are very likely to converge. 
-
-```{r echo=TRUE, fig.height=2, fig.width=4}
-(zz <- curve_table(data = z[[1]], format = "image"))
-```
-
-## Using Profile Likelihoods 
-
-For this last example, we'll explore the `curve_lik()` function, which can help generate profile likelihood functions, and deviance statistics with the help of the [`ProfileLikelihood`](https://cran.r-project.org/package=ProfileLikelihood) package.
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-library(ProfileLikelihood)
-```
-
-We'll use a simple example taken directly from the [`ProfileLikelihood`](https://cran.r-project.org/package=ProfileLikelihood) documentation where we'll calculate the likelihoods from a glm model 
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-data(dataglm)
-xx <- profilelike.glm(y ~ x1 + x2, data=dataglm, profile.theta="group",
-family=binomial(link="logit"), length=500, round=2)
-```
-
-Then, we’ll use `curve_lik()` on the object that the [`ProfileLikelihood`](https://cran.r-project.org/package=ProfileLikelihood) package created. 
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-lik <- curve_lik(xx, dataglm)
-tibble::tibble(lik[[1]])
-```
-
-Next, we’ll plot three functions, the relative likelihood, the log likelihood, the likelihoodm, and the deviance function. 
-
-```{r echo=TRUE, fig.height=4.5, fig.width=6}
-ggcurve(lik[[1]], type = "l1")
-ggcurve(lik[[1]], type = "l2")
-ggcurve(lik[[1]], type = "l3")
-ggcurve(lik[[1]], type = "d")
-```
-
-The obvious advantage of using reduced likelihoods is that they are free of nuisance parameters
-
-$$L_{t_{n}}(\theta)=f_{n}\left(F_{n}^{-1}\left(H_{p i v}(\theta)\right)\right)\left|\frac{\partial}{\partial t} \psi\left(t_{n}, \theta\right)\right|=h_{p i v}(\theta)\left|\frac{\partial}{\partial t} \psi(t, \theta)\right| /\left.\left|\frac{\partial}{\partial \theta} \psi(t, \theta)\right|\right|_{t=t_{n}}$$
-thus, giving summaries of the data that can be incorporated into combined analyses. 
 
 * * * 
 
