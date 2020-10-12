@@ -5,8 +5,9 @@
 \title{Reverse Engineer Consonance / Likelihood Functions Using the Point
 Estimate and Confidence Limits}
 \usage{
-curve_rev(point, LL, UL, type = "c", measure = "default", steps = 10000,
-  table = TRUE)
+curve_rev(point, LL = NULL, UL = NULL, se = NULL, conf.level = 0.95,
+  type = "c", measure = "ratio", steps = 10000,
+  cores = getOption("mc.cores", 1L), table = TRUE)
 }
 \arguments{
 \item{point}{The point estimate from an analysis. Ex: 1.20}
@@ -15,13 +16,19 @@ curve_rev(point, LL, UL, type = "c", measure = "default", steps = 10000,
 
 \item{UL}{The upper confidence limit from an analysis Ex: 1.4}
 
+\item{se}{The standard error of the point estimate. Ex: 0.05}
+
+\item{conf.level}{Confidence level of the interval estimate.}
+
 \item{type}{Indicates whether the produced result should be a consonance
 function or a likelihood function. The default is "c" for consonance and
 likelihood can be set via "l".}
 
 \item{measure}{The type of data being used. If they involve mean differences,
-then the "default" option should be used, which is also the default setting.
-If the data are ratios, then the "ratio" option should be used.}
+then the "mean" option should be used. If the data are ratios, then the "ratio"
+option should be used. "ratio" is currently the default option.
+Currently, this function is designed to be used with ratios
+and normal approximations rather than means.}
 
 \item{steps}{Indicates how many consonance intervals are to be calculated at
 various levels. For example, setting this to 100 will produce 100 consonance
@@ -29,6 +36,9 @@ intervals from 0 to 100. Setting this to 10000 will produce more consonance
 levels. By default, it is set to 1000. Increasing the number substantially
 is not recommended as it will take longer to produce all the intervals and
 store them into a dataframe.}
+
+\item{cores}{Select the number of cores to use in  order to compute the intervals
+The default is 1 core.}
 
 \item{table}{Indicates whether or not a table output with some relevant
 statistics should be generated. The default is TRUE and generates a table
@@ -42,15 +52,20 @@ and the table for the values in the third if table = TRUE.
 \description{
 Using the confidence limits and point estimates from a dataset, one can use
 these estimates to compute thousands of consonance intervals and graph the
-intervals to form a consonance and surprisal function. The intervals are
-calculated from the approximated normal distribution.
+intervals to form a consonance, surprisal, and likelihood functions. The intervals are
+calculated from the approximated normal distribution, however, users should be
+cautious as this this function is currently designed for similar situations
+(involving ratios and normal approximations), nevertheless the function also works for means
+but should be used skeptically, as it can break down in many situations and give implausible numbers.
+Computations of likelihood functions for means is currently not supported.
 }
 \examples{
-
+\dontrun{
 # From a real published study. Point estimate of the result was hazard ratio of 1.61 and
 # lower bound of the interval is 0.997 while upper bound of the interval is 2.59.
 #
 df <- curve_rev(point = 1.61, LL = 0.997, UL = 2.59, measure = "ratio")
+}
 }
 \seealso{
 \code{\link[=ggcurve]{ggcurve()}}

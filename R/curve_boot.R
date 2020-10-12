@@ -18,7 +18,7 @@
 #' A B by p matrix of natural sufficient vectors,
 #' where p is the dimension of the exponential family.
 #' @param replicates Indicates how many bootstrap replicates are to be performed.
-#' The defaultis currently 20000 but more may be desirable, especially to make
+#' The default is currently 20000 but more may be desirable, especially to make
 #' the functions more smooth.
 #' @param steps Indicates how many consonance intervals are to be calculated at
 #' various levels. For example, setting this to 100 will produce 100 consonance
@@ -26,6 +26,8 @@
 #' levels. By default, it is set to 1000. Increasing the number substantially
 #' is not recommended as it will take longer to produce all the intervals and
 #' store them into a dataframe.
+#' @param cores Select the number of cores to use in  order to compute the intervals
+#'  The default is 1 core.
 #' @param table Indicates whether or not a table output with some relevant
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
@@ -37,7 +39,8 @@
 #'
 #'
 
-curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, replicates = 2000, steps = 1000, table = TRUE) {
+curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb,
+                       replicates = 2000, steps = 1000, cores = getOption("mc.cores", 1L), table = TRUE) {
 
 
   # BCA Non-Parametric Bootstrap Method  ---------------------------------------------------
@@ -68,14 +71,14 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
 
     # Data Frame with BCA Intervals ------------------------------
 
-    bca <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$bca, i), nth(z$bca, -i)), mc.cores = getOption("mc.cores", 1L))
+    bca <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$bca, i), nth(z$bca, -i)), mc.cores = cores)
     bcaintervals <- data.frame(do.call(rbind, bca))
     intrvl.limit <- c("lower.limit", "upper.limit")
     colnames(bcaintervals) <- intrvl.limit
-    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$bca, -i) - nth(z$bca, i), mc.cores = getOption("mc.cores", 1L))
+    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$bca, -i) - nth(z$bca, i), mc.cores = cores)
     width <- data.frame(do.call(rbind, news))
     colnames(width) <- "intrvl.width"
-    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = getOption("mc.cores", 1L))
+    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = cores)
     levels <- data.frame(do.call(rbind, bews))
     colnames(levels) <- "intrvl.level"
 
@@ -91,14 +94,14 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
 
     # Data Frame with Standard Intervals ------------------------------
 
-    std <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$std, i), nth(z$std, -i)), mc.cores = getOption("mc.cores", 1L))
+    std <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$std, i), nth(z$std, -i)), mc.cores = cores)
     stdintervals <- data.frame(do.call(rbind, std))
     intrvl.limit <- c("lower.limit", "upper.limit")
     colnames(stdintervals) <- intrvl.limit
-    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$std, -i) - nth(z$std, i), mc.cores = getOption("mc.cores", 1L))
+    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$std, -i) - nth(z$std, i), mc.cores = cores)
     width <- data.frame(do.call(rbind, news))
     colnames(width) <- "intrvl.width"
-    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = getOption("mc.cores", 1L))
+    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = cores)
     levels <- data.frame(do.call(rbind, bews))
     colnames(levels) <- "intrvl.level"
 
@@ -165,14 +168,14 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
     z$alphaperc <- as.numeric(z$alphaperc)
     1:length(alpha)
 
-    bca <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$bca, i), nth(z$bca, -i)), mc.cores = getOption("mc.cores", 1L))
+    bca <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$bca, i), nth(z$bca, -i)), mc.cores = cores)
     bcaintervals <- data.frame(do.call(rbind, bca))
     intrvl.limit <- c("lower.limit", "upper.limit")
     colnames(bcaintervals) <- intrvl.limit
-    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$bca, -i) - nth(z$bca, i), mc.cores = getOption("mc.cores", 1L))
+    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$bca, -i) - nth(z$bca, i), mc.cores = cores)
     width <- data.frame(do.call(rbind, news))
     colnames(width) <- "intrvl.width"
-    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = getOption("mc.cores", 1L))
+    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = cores)
     levels <- data.frame(do.call(rbind, bews))
     colnames(levels) <- "intrvl.level"
 
@@ -188,14 +191,14 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
 
     # Data Frame with Standard Intervals ------------------------------
 
-    std <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$std, i), nth(z$std, -i)), mc.cores = getOption("mc.cores", 1L))
+    std <- pbmclapply(1:length(alpha), FUN = function(i) c(nth(z$std, i), nth(z$std, -i)), mc.cores = cores)
     stdintervals <- data.frame(do.call(rbind, std))
     intrvl.limit <- c("lower.limit", "upper.limit")
     colnames(stdintervals) <- intrvl.limit
-    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$std, -i) - nth(z$std, i), mc.cores = getOption("mc.cores", 1L))
+    news <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$std, -i) - nth(z$std, i), mc.cores = cores)
     width <- data.frame(do.call(rbind, news))
     colnames(width) <- "intrvl.width"
-    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = getOption("mc.cores", 1L))
+    bews <- pbmclapply(1:length(alpha), FUN = function(i) nth(z$alphaperc, -i) - nth(z$alphaperc, i), mc.cores = cores)
     levels <- data.frame(do.call(rbind, bews))
     colnames(levels) <- "intrvl.level"
 
@@ -229,15 +232,15 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
     }
 
 
-    # Boot Percentile Method For Density --------------------------------------
+    # Boot t Method For Density --------------------------------------
   } else if (method == "t") {
-    t.boot <- boot(data = data, statistic = func, R = replicates, parallel = "multicore", ncpus = getOption("mc.cores", 1L))
+    t.boot <- boot(data = data, statistic = func, R = replicates, parallel = "multicore", ncpus = cores)
 
     intrvls <- 1:steps / steps
 
     t <- pbmclapply(intrvls,
       FUN = function(i) boot.ci(t.boot, conf = i, type = "perc")$perc[4:5],
-      mc.cores = getOption("mc.cores", 1L)
+      mc.cores = cores
     )
 
     df <- data.frame(do.call(rbind, t))
@@ -251,7 +254,14 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
     df <- head(df, -1)
     class(df) <- c("data.frame", "concurve")
 
+    # Bootstrap Distribution
+    boot_dens <- t.boot[["t"]]
+    colnames(boot_dens) <- "x"
+    boot_dens <- as.data.frame(boot_dens)
+    boot_dens <- head(boot_dens, -1)
+    class(boot_dens) <- c("data.frame", "concurve")
 
+    # Interval Density
     densdf <- data.frame(c(df$lower.limit, df$upper.limit))
     colnames(densdf) <- "x"
     densdf <- head(densdf, -1)
@@ -262,8 +272,8 @@ curve_boot <- function(data = data, func = func, method = "bca", t0, tt, bb, rep
       levels <- c(0.25, 0.50, 0.75, 0.80, 0.85, 0.90, 0.95, 0.975, 0.99)
       (df_subintervals <- (curve_table(df, levels, type = "c", format = "data.frame")))
       class(df_subintervals) <- c("data.frame", "concurve")
-      dataframes <- list(df, densdf, df_subintervals)
-      names(dataframes) <- c("Intervals Dataframe", "Intervals Density", "Intervals Table")
+      dataframes <- list(df, boot_dens, densdf, df_subintervals)
+      names(dataframes) <- c("Intervals Dataframe", "Bootstrap Distribution", "Intervals Density", "Intervals Table")
       class(dataframes) <- "concurve"
       return(dataframes)
     } else if (table == FALSE) {

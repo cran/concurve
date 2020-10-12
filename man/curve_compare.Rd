@@ -32,7 +32,7 @@ Computes an AUC score and returns a plot that graphs two functions.
 Compares the p-value/s-value, and likelihood functions and computes an AUC number.
 }
 \examples{
-\donttest{
+\dontrun{
 library(concurve)
 GroupA <- rnorm(50)
 GroupB <- rnorm(50)
@@ -44,7 +44,6 @@ RandomData2 <- data.frame(GroupA2, GroupB2)
 model <- lm(GroupA2 ~ GroupB2, data = RandomData2)
 randomframe <- curve_gen(model, "GroupB2")
 curve_compare(intervalsdf[[1]], randomframe[[1]])
-curve_compare(intervalsdf[[1]], randomframe[[1]], type = "s")
 }
 
 }

@@ -1,10 +1,9 @@
 Type: Package
 Package: concurve
-Title: Computes and Plots Compatibility (Confidence) Intervals,
-        P-Values, S-Values, & Likelihood Intervals to Form Consonance,
-        Surprisal, & Likelihood Functions
-Version: 2.5.0
-Date: 2020-04-19
+Title: Computes & Plots Compatibility (Confidence), Surprisal, &
+        Likelihood Distributions
+Version: 2.7.7
+Date: 2020-10-12
 Authors@R: 
     c(person(given = "Zad",
              family = "Rafi",
@@ -14,48 +13,46 @@ Authors@R:
       person(given = "Andrew D.",
              family = "Vigotsky",
              role = "aut",
-             comment = c(ORCID = "0000-0003-3166-0688")))
+             email = "avigotsky@gmail.com",
+             comment = c(ORCID = "0000-0003-3166-0688")),
+      person(given = "Aaron",
+             family = "Caldwell",
+             role = "ctb",
+             email = "arcaldwell49@gmail.com",
+             comment = c(ORCID = "0000-0002-4541-6283")))
 Maintainer: Zad Rafi <zad@lesslikely.com>
-Description: Allows one to compute compatibility (confidence)
-    intervals for various statistical tests along with their corresponding
-    P-values, S-values, and likelihoods. The intervals can be plotted to
-    create consonance, surprisal, and likelihood functions allowing one to
-    see what effect sizes are compatible with the test model at various
-    compatibility levels rather than being limited to one interval estimate
-    such as 95\%. Functions can also be compared to one another to see how much
-    they overlap with one another and differ. Results can also be exported for 
-    Word, Powerpoint, and TeX documents. The package currently supports bootstrapping,
-    linear models, generalized linear models, linear mixed-effects models, 
-    survival analysis, and meta-analysis. These methods are discussed by 
-    Poole C. (1987) <doi:10.2105/AJPH.77.2.195>, Schweder T, Hjort NL. (2002)
-    <doi:10.1111/1467-9469.00285>, Singh K, Xie M, Strawderman WE. (2007)
-    <arXiv:0708.0976>, Rothman KJ, Greenland S, Lash TL. (2008,
-    ISBN:9781451190052), Greenland S. (2019)
-    <doi:10.1080/00031305.2018.1529625>, Chow ZR, Greenland S. (2019)
-    <arXiv:1909.08579>, and Greenland S, Chow ZR. (2019)
-    <arXiv:1909.08583>.
+Description: Computes compatibility (confidence) distributions along with their corresponding P-values,
+    S-values, and likelihoods. The intervals can be plotted to form the distributions themselves.  
+    Functions can be compared to one another to see how much they overlap. Results can be
+    exported to Microsoft Word, Powerpoint, and TeX documents. The package currently supports 
+    resampling methods, computing differences, generalized linear models, mixed-effects models, 
+    survival analysis, and meta-analysis. These methods are discussed 
+    by Schweder T, Hjort NL. (2016, ISBN:9781316445051) and 
+    Rafi Z, Greenland S. (2020) <doi:10.1186/s12874-020-01105-9>.
 License: GPL-3 | file LICENSE
 URL: https://data.lesslikely.com/concurve/,
-        https://github.com/zadrafi/concurve, https://lesslikely.com/
+        https://github.com/zadrafi/concurve
 BugReports: https://github.com/zadrafi/concurve/issues
-Imports: MASS, bcaboot, boot, lme4, dplyr, flextable, ggplot2, knitr,
+Depends: R (>= 4.0.0)
+Imports: methods, bcaboot, boot, dplyr, flextable, ggplot2, knitr,
         metafor, officer, parallel, pbmcapply, ProfileLikelihood,
-        scales, survival, survminer, tibble, tidyr, methods, cowplot,
-        patchwork
-Suggests: covr, roxygen2, spelling, testthat, rmarkdown, Lock5Data,
-        carData, bench, brms, rstan, rstanarm, bayesplot, vdiffr
-VignetteBuilder: knitr
+        scales, colorspace, survival, survminer, tibble, tidyr
+Suggests: MASS, lme4, covr, roxygen2, spelling, testthat, rmarkdown,
+        Lock5Data, carData, bench, rms, brms, rstan, rstanarm,
+        bayesplot, vdiffr, ggtext, daewr, svglite, data.table, nlme,
+        simstudy, patchwork, cowplot, reprex
 ByteCompile: true
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.1.0
-X-schema.org-keywords: confidence, compatibility, consonance,
-        surprisal, interval, function, curve
-Depends: R (>= 3.6.0)
+RoxygenNote: 7.1.1
+X-schema.org-keywords: confidence, compatibility, consonance, curve,
+        information statistics, surprisals, interval, function,
+        distribution, fiducial
 NeedsCompilation: no
-Packaged: 2020-04-20 00:14:46 UTC; zad
+Packaged: 2020-10-12 16:07:50 UTC; zad
 Author: Zad Rafi [aut, cre] (<https://orcid.org/0000-0003-1545-8199>),
-  Andrew D. Vigotsky [aut] (<https://orcid.org/0000-0003-3166-0688>)
+  Andrew D. Vigotsky [aut] (<https://orcid.org/0000-0003-3166-0688>),
+  Aaron Caldwell [ctb] (<https://orcid.org/0000-0002-4541-6283>)
 Repository: CRAN
-Date/Publication: 2020-04-20 06:00:02 UTC
+Date/Publication: 2020-10-12 17:10:06 UTC

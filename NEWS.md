@@ -1,3 +1,46 @@
+# concurve 2.7.7
+## Major changes 
+* `log` option added to `curve_gen()` to exponentiate the coefficients.
+  - Thanks to [Isabella Ghement](https://twitter.com/IsabellaGhement) for finding the issue and notifying us about it.
+* customization option for `title` fully added to `ggcurve()`
+
+# concurve 2.7.5
+
+## Major changes 
+ 
+* Substantial revisions to the documents and website
+* Now, far fewer dependencies to avoid potential conflicts in the future 
+* Included lots of resources for individuals to better learn the concepts 
+* Far better improvement in documentation and in continous integration
+* Added several messages that accompany functions from the program to aid researchers
+* Larger and improved tutorial on how to construct these functions using Stata
+
+# concurve 2.7.0
+
+## Major changes 
+* `curve_gen()` now includes options to adjust CIs and P-values for multiple comparisons.
+* `curve_gen()` can now accept inputs from the `rms` package's `ols()` function. 
+   - This can be done using the same `lm` option that is typically used.
+* disabled likelihood function computations for `curve_rev()` for continuous variables due to instability.
+  
+## Minor changes
+* improvements to documentation all around.
+* new article on estimating variance components using `lme4`.
+* [new article](https://data.lesslikely.com/concurve/articles/tables.html) on using `curve_table()` to produce outputs from the functions.
+* updates to article on troubleshooting and parallel computing.
+
+# concurve 2.6.0
+
+## Major changes 
+* An error in `curve_rev()` was fixed where for the default measure, the computations were calculated as if measure was set to ratio.
+  - Thank you to [Aaron Caldwell](https://twitter.com/ExPhysStudent) for his generous help in fixing this bug. 
+* `curve_rev()` can now take summary statistics such as the point estimate and it's standard error to back calculate the function. 
+  - Also thanks to [Aaron Caldwell](https://twitter.com/ExPhysStudent) for this added feature.
+* `curve_boot()` now takes an option allowing users to specify the number of cores to be used. 
+* Graphing functions such as `ggcurve()` and `plot_compare()` now have the options to customize the second y-axis and also change the color of the outline of the functions.
+  - Thus, the argument `yaxis` has been replaced by `yaxis1` and `yaxis2`.
+  - For `plot_compare()` color has been replaced by `color1` and `color2`
+
 # concurve 2.5.0
 
 ## Major changes 

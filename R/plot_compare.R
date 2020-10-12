@@ -44,12 +44,19 @@
 #' it is set to "Range of Values.
 #' In order to set a x-axis title, it must be in quotes. For example,
 #' plot_compare(type = "c", data = x, xaxis = "Hazard Ratio").
-#' @param yaxis A custom y-axis title for the graph. By default,
+#' @param yaxis1 A custom y-axis title for the graph. By default,
 #' it is set to "Consonance Level".
 #' In order to set a y-axis title, it must be in quotes. For example,
-#' plot_compare(type = "c", data = x, yxis = "Confidence Level").
-#' @param color Item that allows the user to choose the color of the points
-#' and the ribbons in the graph. By default, it is set to color = "#555555".
+#' ggcurve(type = "c", data = x, yxis1= "Confidence Level").
+#' @param yaxis2 A custom y-axis title for the graph. By default,
+#' it is set to "Levels for CI".
+#' In order to set a y-axis title, it must be in quotes. For example,
+#' ggcurve(type = "c", data = x, yxis2= "Confidence Level").
+#' @param color1 Item that allows the user to choose the color of the points
+#' and the ribbons in the graph. By default, it is set to darken("#D55E00", 0.4).
+#' The inputs must be in quotes.
+#' @param color2 Item that allows the user to choose the color of the points
+#' and the ribbons in the graph. By default, it is set to darken("#009E73", 0.4).
 #' The inputs must be in quotes.
 #' For example, plot_compare(type = "c", data = x, color = "#333333").
 #' @param fill1 Item that allows the user to choose the color of the ribbons in the graph
@@ -60,7 +67,7 @@
 #' For example, plot_compare(type = "c", data = x, fill2 = "#333333").
 #' @return A plot that compares two functions.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' library(concurve)
 #'
 #' GroupA <- rnorm(50)
@@ -83,11 +90,13 @@
 plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalue = FALSE, position = "pyramid",
                          title = "Interval Functions",
                          subtitle = "The function displays intervals at every level.",
-                         xaxis = expression(Theta ~ "Range of Values"),
-                         yaxis = expression(paste(italic(p), "-value")),
-                         color = "#000000",
-                         fill1 = "#239a98",
-                         fill2 = "#EE6A50") {
+                         xaxis = expression(theta == ~"Range of Values"),
+                         yaxis1 = expression(paste(italic(p), "-value")),
+                         yaxis2 = "Levels for CI (%)",
+                         color1 = darken("#D55E00", 0.2),
+                         color2 = darken("#009E73", 0.2),
+                         fill1 = "#99c7c7",
+                         fill2 = "#d46c5b") {
   cols <- c(fill1, fill2)
 
   # Consonance Curve -----------------------------------------------------
@@ -128,39 +137,39 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     }
     ggplot(data = data1) +
       geom_line(aes(x = lower.limit, y = pvalue),
-        color = color
+        color = color2
       ) +
       geom_line(aes(x = upper.limit, y = pvalue),
-        color = color
+        color = color2
       ) +
       geom_ribbon(aes(x = lower.limit, ymin = min(pvalue), ymax = pvalue, fill = fill1),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       geom_ribbon(aes(x = upper.limit, ymin = min(pvalue), ymax = pvalue, fill = fill1),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       geom_line(
         data = data2, aes(x = lower.limit, y = pvalue),
-        color = color
+        color = color1
       ) +
       geom_line(
         data = data2, aes(x = upper.limit, y = pvalue),
-        color = color
+        color = color1
       ) +
       geom_ribbon(
         data = data2, aes(x = lower.limit, ymin = min(pvalue), ymax = pvalue, fill = fill2),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       geom_ribbon(
         data = data2, aes(x = upper.limit, ymin = min(pvalue), ymax = pvalue, fill = fill2),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       theme_minimal() +
       labs(
         title = "Consonance Curves",
         subtitle = subtitle,
         x = xaxis,
-        y = yaxis
+        y = yaxis1
       ) +
       theme(
         plot.title = element_text(size = 12),
@@ -200,7 +209,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
           scale_y_reverse(
             expand = expansion(mult = c(0.01, 0.025)),
             breaks = seq(0, 1, 0.10),
-            sec.axis = sec_axis(~ (1 - .) * 100, name = "Levels for CI (%)", breaks = seq(0, 100, 10))
+            sec.axis = sec_axis(~ (1 - .) * 100, name = yaxis2, breaks = seq(0, 100, 10))
           )
         }
       } +
@@ -209,7 +218,7 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
           scale_y_continuous(
             expand = expansion(mult = c(0.01, 0.025)),
             breaks = seq(0, 1, 0.10),
-            sec.axis = sec_axis(~ (1 - .) * 100, name = "Levels for CI (%)", breaks = seq(0, 100, 10))
+            sec.axis = sec_axis(~ (1 - .) * 100, name = yaxis2, breaks = seq(0, 100, 10))
           )
         }
       } +
@@ -261,32 +270,32 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     }
     ggplot(data = data1) +
       geom_line(aes(x = lower.limit, y = svalue),
-        color = color
+        color = color2
       ) +
       geom_line(aes(x = upper.limit, y = svalue),
-        color = color
+        color = color2
       ) +
       geom_ribbon(aes(x = lower.limit, ymin = max(svalue), ymax = svalue, fill = fill1),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       geom_ribbon(aes(x = upper.limit, ymin = max(svalue), ymax = svalue, fill = fill1),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       geom_line(
         data = data2, aes(x = lower.limit, y = svalue),
-        color = color
+        color = color1
       ) +
       geom_line(
         data = data2, aes(x = upper.limit, y = svalue),
-        color = color
+        color = color1
       ) +
       geom_ribbon(
         data = data2, aes(x = lower.limit, ymin = max(svalue), ymax = svalue, fill = fill2),
-        alpha = 0.20
+        alpha = 0.10
       ) +
       geom_ribbon(
         data = data2, aes(x = upper.limit, ymin = max(svalue), ymax = svalue, fill = fill2),
-        fill = fill2, alpha = 0.20
+        alpha = 0.10
       ) +
       labs(
         title = "Surprisal Functions",
@@ -359,10 +368,10 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     }
 
     ggplot(data = data1, mapping = aes(x = values, y = support)) +
-      geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(support), ymax = support, fill = fill1), alpha = 0.20) +
-      geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = min(support), ymax = support, fill = fill2), alpha = 0.20) +
+      geom_line(color = color2) +
+      geom_ribbon(aes(x = values, ymin = min(support), ymax = support, fill = fill1), alpha = 0.10) +
+      geom_line(data = data2, color = color1) +
+      geom_ribbon(data = data2, aes(x = values, ymin = min(support), ymax = support, fill = fill2), alpha = 0.10) +
       labs(
         title = "Relative Likelihood Functions",
         subtitle = subtitle,
@@ -444,10 +453,10 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     }
 
     ggplot(data = data1, mapping = aes(x = values, y = loglikelihood)) +
-      geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill1), alpha = 0.20) +
-      geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill2), alpha = 0.20) +
+      geom_line(color = color1) +
+      geom_ribbon(aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill1), alpha = 0.10) +
+      geom_line(data = data2, color = color2) +
+      geom_ribbon(data = data2, aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood, fill = fill2), alpha = 0.10) +
       labs(
         title = "Log-Likelihood Function",
         subtitle = subtitle,
@@ -529,10 +538,10 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     }
 
     ggplot(data = data1, mapping = aes(x = values, y = likelihood)) +
-      geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill1), alpha = 0.20) +
-      geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill2), alpha = 0.20) +
+      geom_line(color = color1) +
+      geom_ribbon(aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill1), alpha = 0.10) +
+      geom_line(data = data2, color = color2) +
+      geom_ribbon(data = data2, aes(x = values, ymin = min(likelihood), ymax = likelihood, fill = fill2), alpha = 0.10) +
       labs(
         title = "Likelihood Function",
         subtitle = subtitle,
@@ -613,10 +622,10 @@ plot_compare <- function(data1, data2, type = "c", measure = "default", nullvalu
     }
 
     ggplot(data = data1, mapping = aes(x = values, y = deviancestat)) +
-      geom_line() +
-      geom_ribbon(aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill1), alpha = 0.20) +
-      geom_line(data = data2) +
-      geom_ribbon(data = data2, aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill2), alpha = 0.20) +
+      geom_line(color = color1) +
+      geom_ribbon(aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill1), alpha = 0.10) +
+      geom_line(data = data2, color = color2) +
+      geom_ribbon(data = data2, aes(x = values, ymin = deviancestat, ymax = max(deviancestat), fill = fill2), alpha = 0.10) +
       labs(
         title = "Deviance Functions",
         subtitle = subtitle,

@@ -3,7 +3,8 @@
 #' Computes thousands of consonance (confidence) intervals for
 #' the chosen parameter in the selected lme4 model and places
 #' the interval limits for each interval level into a data frame along
-#' with the corresponding p-values and s-values.
+#' with the corresponding p-values and s-values.. It is generally
+#' recommended to wrap this function using suppressMessages() due to the long list of profiling messages
 #'
 #' @param object The statistical model of interest from lme4 is to be indicated here.
 #' @param parm The variable of interest from the model (coefficients, intercept)
@@ -32,7 +33,8 @@
 #' levels. By default, it is set to 1000. Increasing the number substantially
 #' is not recommended as it will take longer to produce all the intervals and
 #' store them into a dataframe.
-#' @param mc.cores For parallel processing. Defaults to 1 core.
+#' @param cores Select the number of cores to use in  order to compute the intervals
+#'  The default is 1 core.
 #' @param table Indicates whether or not a table output with some relevant
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
@@ -45,7 +47,7 @@
 
 
 curve_lmer <- function(object, parm, method = "profile", zeta = NULL,
-                       nsim = NULL, FUN = NULL, boot.type = NULL, steps = 1000, mc.cores = 1, table = FALSE) {
+                       nsim = NULL, FUN = NULL, boot.type = NULL, steps = 1000, cores = getOption("mc.cores", 1L), table = FALSE) {
   if (is.numeric(steps) != TRUE) {
     stop("Error: 'steps' must be a numeric vector")
   }
@@ -58,7 +60,7 @@ curve_lmer <- function(object, parm, method = "profile", zeta = NULL,
       nsim = nsim, boot.type = boot.type,
       FUN = FUN, quiet = FALSE
     )[1:2]
-  }, mc.cores = mc.cores)
+  }, mc.cores = cores)
 
 
   df <- data.frame(do.call(rbind, results))

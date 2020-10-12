@@ -17,7 +17,7 @@
 #' @param ... Can be used to pass further arguments to plot_compare().
 #' @return Computes an AUC score and returns a plot that graphs two functions.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' library(concurve)
 #' GroupA <- rnorm(50)
 #' GroupB <- rnorm(50)
@@ -29,7 +29,6 @@
 #' model <- lm(GroupA2 ~ GroupB2, data = RandomData2)
 #' randomframe <- curve_gen(model, "GroupB2")
 #' curve_compare(intervalsdf[[1]], randomframe[[1]])
-#' curve_compare(intervalsdf[[1]], randomframe[[1]], type = "s")
 #' }
 #'
 #' @seealso [plot_compare()]

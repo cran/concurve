@@ -13,9 +13,9 @@
 #' statistical test comparing two independent groups.Inserting "paired" will
 #' change the test to a paired difference test.
 #' @param method By default this is turned off (set to "default"), but
-#' allows for bootstrapping if "boot" is insertedinto the function call.
+#' allows for bootstrapping if "boot" is inserted into the function call.
 #' @param replicates Indicates how many bootstrap replicates are to be performed.
-#' The defaultis currently 20000 but more may be desirable, especially to make
+#' The default is currently 20000 but more may be desirable, especially to make
 #' the functions more smooth.
 #' @param steps Indicates how many consonance intervals are to be calculated at
 #' various levels. For example, setting this to 100 will produce 100 consonance
@@ -23,6 +23,8 @@
 #' levels. By default, it is set to 1000. Increasing the number substantially
 #' is not recommended as it will take longer to produce all the intervals and
 #' store them into a dataframe.
+#' @param cores Select the number of cores to use in  order to compute the intervals
+#'  The default is 1 core.
 #' @param table Indicates whether or not a table output with some relevant
 #' statistics should be generated. The default is TRUE and generates a table
 #' which is included in the list object.
@@ -32,13 +34,15 @@
 #' and the table for the values in the third if table = TRUE.
 #'
 #' @examples
-#'
+#' \dontrun{
 #' # Simulate random data
 #' GroupA <- runif(100, min = 0, max = 100)
 #' GroupB <- runif(100, min = 0, max = 100)
 #' RandomData <- data.frame(GroupA, GroupB)
 #' bob <- curve_mean(GroupA, GroupB, RandomData)
-curve_mean <- function(x, y, data, paired = F, method = "default", replicates = 1000, steps = 10000, table = TRUE) {
+#' }
+curve_mean <- function(x, y, data, paired = F, method = "default", replicates = 1000,
+                       steps = 10000, cores = getOption("mc.cores", 1L), table = TRUE) {
   if (is.numeric(x) != TRUE) {
     stop("Error: 'x' must be a numeric vector")
   }
@@ -57,7 +61,7 @@ curve_mean <- function(x, y, data, paired = F, method = "default", replicates = 
 
   intrvls <- (0:steps) / steps
   if (method == "default") {
-    results <- pbmclapply(intrvls, FUN = function(i) t.test(x, y, data = data, paired = paired, conf.level = i)$conf.int[], mc.cores = getOption("mc.cores", 1L))
+    results <- pbmclapply(intrvls, FUN = function(i) t.test(x, y, data = data, paired = paired, conf.level = i)$conf.int[], mc.cores = cores)
   } else if (method == "boot") {
     diff <- mean(x) - mean(y)
     if (paired) {
@@ -71,7 +75,7 @@ curve_mean <- function(x, y, data, paired = F, method = "default", replicates = 
           mean(sample(y, length(y), replace = T))
       ) - diff
     }
-    results <- pbmclapply(intrvls, FUN = function(i) diff - quantile(boot_dist, probs = (1 + c(i, -i)) / 2), mc.cores = getOption("mc.cores", 1L))
+    results <- pbmclapply(intrvls, FUN = function(i) diff - quantile(boot_dist, probs = (1 + c(i, -i)) / 2), mc.cores = cores)
   }
   df <- data.frame(do.call(rbind, results))
   intrvl.limit <- c("lower.limit", "upper.limit")

@@ -4,7 +4,8 @@
 \alias{curve_surv}
 \title{Consonance Functions For Survival Data}
 \usage{
-curve_surv(data, x, steps = 10000, table = TRUE)
+curve_surv(data, x, steps = 10000, cores = getOption("mc.cores", 1L),
+  table = TRUE)
 }
 \arguments{
 \item{data}{Object where the Cox model is stored, typically a list produced by the
@@ -19,6 +20,9 @@ intervals from 0 to 100. Setting this to 10000 will produce more consonance
 levels. By default, it is set to 1000. Increasing the number substantially
 is not recommended as it will take longer to produce all the intervals and
 store them into a dataframe.}
+
+\item{cores}{Select the number of cores to use in  order to compute the intervals
+The default is 1 core.}
 
 \item{table}{Indicates whether or not a table output with some relevant
 statistics should be generated. The default is TRUE and generates a table
@@ -36,8 +40,7 @@ the interval limits for each interval level into a data frame along
 with the corresponding p-value and s-value.
 }
 \examples{
-
-
+\dontrun{
 library(carData)
 Rossi[1:5, 1:10]
 library(survival)
@@ -48,4 +51,5 @@ mod.allison <- coxph(Surv(week, arrest) ~ fin + age + race + wexp + mar + paro +
 mod.allison
 
 z <- curve_surv(mod.allison, "prio")
+}
 }

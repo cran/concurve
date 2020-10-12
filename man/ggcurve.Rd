@@ -5,10 +5,11 @@
 \title{Plots Consonance, Surprisal, and Likelihood Functions}
 \usage{
 ggcurve(data, type = "c", measure = "default", levels = 0.95,
-  nullvalue = FALSE, position = "pyramid", title = "Interval Function",
+  nullvalue = NULL, position = "pyramid", title = "Consonance Function",
   subtitle = "The function displays intervals at every level.",
-  xaxis = expression(Theta ~ "Range of Values"),
-  yaxis = expression(paste(italic(p), "-value")), color = "#000000",
+  xaxis = expression(theta == ~"Range of Values"),
+  yaxis1 = expression(paste(italic(p), "-value")),
+  yaxis2 = "Levels for CI (\%)", color = darken("#009E73", 0.5),
   fill = "#239a98")
 }
 \arguments{
@@ -36,12 +37,10 @@ but more levels can be plotted by using the c() function for example,
 levels = c(0.50, 0.75, 0.95).}
 
 \item{nullvalue}{Indicates whether the null value for the measure
-should be plotted. By default, it is set to FALSE, meaning it will not be
-plotted as a vertical line. Changing this to TRUE, will plot a vertical
-line at 0 when the measure is set to " default" and a vertical line at
-1 when the measure is set to "ratio". For example,
-ggcurve(type = "c", data = df, measure = "ratio", nullvalue = "present").
-This feature is not yet available for surprisal functions.}
+should be plotted. By default, it is set to NULL, meaning it will not be
+plotted as a vertical line. Changing this to a numerical vector will specify the
+region where a line should be plotted or an area that should be shaded. The input
+must be a numerical vector, for example c(-0.5, 0.5) or a single numerical vector such as 0 or 1.}
 
 \item{position}{Determines the orientation of the P-value (consonance) function.
 By default, it is set to "pyramid", meaning the p-value function will
@@ -65,10 +64,15 @@ it is set to "Range of Values.
 In order to set a x-axis title, it must be in quotes. For example,
 ggcurve(type = "c", data = x, xaxis = "Hazard Ratio").}
 
-\item{yaxis}{A custom y-axis title for the graph. By default,
+\item{yaxis1}{A custom y-axis title for the graph. By default,
 it is set to "Consonance Level".
 In order to set a y-axis title, it must be in quotes. For example,
-ggcurve(type = "c", data = x, yxis = "Confidence Level").}
+ggcurve(type = "c", data = x, yxis1= "Confidence Level").}
+
+\item{yaxis2}{A custom y-axis title for the graph. By default,
+it is set to "Levels for CI".
+In order to set a y-axis title, it must be in quotes. For example,
+ggcurve(type = "c", data = x, yxis2= "Confidence Level").}
 
 \item{color}{Item that allows the user to choose the color of the points
 and the ribbons in the graph. By default, it is set to color = "#555555".
@@ -90,7 +94,7 @@ the interval estimates to produce a p-value/s-value function
 using ggplot2 graphics.
 }
 \examples{
-
+\dontrun{
 # Simulate random data
 
 library(concurve)
@@ -100,8 +104,9 @@ GroupB <- rnorm(500)
 
 RandomData <- data.frame(GroupA, GroupB)
 
-intervalsdf <- curve_mean(GroupA, GroupB, data = RandomData, method = "default")
-ggcurve(type = "c", intervalsdf[[1]], nullvalue = TRUE)
+intervalsdf <- suppressMessages(curve_mean(GroupA, GroupB, data = RandomData, method = "default"))
+ggcurve(type = "c", intervalsdf[[1]], nullvalue =c(0))
+}
 }
 \seealso{
 \code{\link[=plot_compare]{plot_compare()}}

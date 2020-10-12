@@ -25,12 +25,10 @@
 #' but more levels can be plotted by using the c() function for example,
 #' levels = c(0.50, 0.75, 0.95).
 #' @param nullvalue Indicates whether the null value for the measure
-#' should be plotted. By default, it is set to FALSE, meaning it will not be
-#' plotted as a vertical line. Changing this to TRUE, will plot a vertical
-#' line at 0 when the measure is set to " default" and a vertical line at
-#' 1 when the measure is set to "ratio". For example,
-#' ggcurve(type = "c", data = df, measure = "ratio", nullvalue = "present").
-#' This feature is not yet available for surprisal functions.
+#' should be plotted. By default, it is set to NULL, meaning it will not be
+#' plotted as a vertical line. Changing this to a numerical vector will specify the
+#' region where a line should be plotted or an area that should be shaded. The input
+#' must be a numerical vector, for example c(-0.5, 0.5) or a single numerical vector such as 0 or 1.
 #' @param position Determines the orientation of the P-value (consonance) function.
 #' By default, it is set to "pyramid", meaning the p-value function will
 #' stand right side up, like a pyramid. However, it can also be inverted
@@ -49,10 +47,14 @@
 #' it is set to "Range of Values.
 #' In order to set a x-axis title, it must be in quotes. For example,
 #' ggcurve(type = "c", data = x, xaxis = "Hazard Ratio").
-#' @param yaxis A custom y-axis title for the graph. By default,
+#' @param yaxis1 A custom y-axis title for the graph. By default,
 #' it is set to "Consonance Level".
 #' In order to set a y-axis title, it must be in quotes. For example,
-#' ggcurve(type = "c", data = x, yxis = "Confidence Level").
+#' ggcurve(type = "c", data = x, yxis1= "Confidence Level").
+#' @param yaxis2 A custom y-axis title for the graph. By default,
+#' it is set to "Levels for CI".
+#' In order to set a y-axis title, it must be in quotes. For example,
+#' ggcurve(type = "c", data = x, yxis2= "Confidence Level").
 #' @param color Item that allows the user to choose the color of the points
 #' and the ribbons in the graph. By default, it is set to color = "#555555".
 #' The inputs must be in quotes.
@@ -65,7 +67,7 @@
 #' p-values and compatibility levels.
 #'
 #' @examples
-#'
+#' \dontrun{
 #' # Simulate random data
 #'
 #' library(concurve)
@@ -75,35 +77,35 @@
 #'
 #' RandomData <- data.frame(GroupA, GroupB)
 #'
-#' intervalsdf <- curve_mean(GroupA, GroupB, data = RandomData, method = "default")
-#' ggcurve(type = "c", intervalsdf[[1]], nullvalue = TRUE)
+#' intervalsdf <- suppressMessages(curve_mean(GroupA, GroupB, data = RandomData, method = "default"))
+#' ggcurve(type = "c", intervalsdf[[1]], nullvalue =c(0))
+#' }
 #' @seealso [plot_compare()]
 #'
 
-ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullvalue = FALSE, position = "pyramid",
-                    title = "Interval Function",
+ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullvalue = NULL,
+                    position = "pyramid",
+                    title = "Consonance Function",
                     subtitle = "The function displays intervals at every level.",
-                    xaxis = expression(Theta ~ "Range of Values"),
-                    yaxis = expression(paste(italic(p), "-value")),
-                    color = "#000000",
+                    xaxis = expression(theta == ~"Range of Values"),
+                    yaxis1 = expression(paste(italic(p), "-value")),
+                    yaxis2 = "Levels for CI (%)",
+                    color = darken("#009E73", 0.5),
                     fill = "#239a98") {
 
 
   # Consonance Curve -----------------------------------------------------
 
   if (type == "c") {
-    if (is(data, "concurve") != TRUE) {
-      stop("Error: 'data' must be a data frame from 'concurve'.")
-    }
     if (ncol(data) != 7) {
-      stop("Error: 'data' must be a data frame from 'concurve'.")
+      stop("Error: 'data' or 'list' must be from 'concurve'.")
     }
     if (is.character(measure) != TRUE) {
       stop("Error: 'measure' must be a string such as 'default' or 'ratio'.")
     }
-    if (is.logical(nullvalue) != TRUE) {
-      stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE'.")
-    }
+    #  if (is.logical(nullvalue) != TRUE | is.numeric(nullvalue) != TRUE) {
+    #   stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE' or a numeric vector.")
+    #  }
     if (is.character(position) != TRUE) {
       stop("Error: 'position' must be a string such as 'pyramid' or 'inverted'.")
     }
@@ -139,16 +141,16 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
       geom_point(data = interval, mapping = aes(x = limits, y = 1 - levels), size = 1.75, shape = 18) +
       geom_line(data = interval, mapping = aes(x = limits, y = 1 - levels, group = levels), size = .30) +
       geom_ribbon(aes(x = lower.limit, ymin = min(pvalue), ymax = pvalue),
-        fill = fill, alpha = 0.20
+        fill = fill, alpha = 0.10
       ) +
       geom_ribbon(aes(x = upper.limit, ymin = min(pvalue), ymax = pvalue),
-        fill = fill, alpha = 0.20
+        fill = fill, alpha = 0.10
       ) +
       labs(
-        title = "Consonance Curve",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
-        y = yaxis
+        y = yaxis1
       ) +
       theme_minimal() +
       theme(
@@ -169,7 +171,7 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
           scale_y_reverse(
             expand = expansion(mult = c(0.01, 0.025)),
             breaks = seq(0, 1, 0.10),
-            sec.axis = sec_axis(~ (1 - .) * 100, name = "Levels for CI (%)", breaks = seq(0, 100, 10))
+            sec.axis = sec_axis(~ (1 - .) * 100, name = yaxis2, breaks = seq(0, 100, 10))
           )
         }
       } +
@@ -178,24 +180,17 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
           scale_y_continuous(
             expand = expansion(mult = c(0.01, 0.025)),
             breaks = seq(0, 1, 0.10),
-            sec.axis = sec_axis(~ (1 - .) * 100, name = "Levels for CI (%)", breaks = seq(0, 100, 10))
+            sec.axis = sec_axis(~ (1 - .) * 100, name = yaxis2, breaks = seq(0, 100, 10))
           )
         }
       } +
-      if (nullvalue == TRUE) {
-        if (measure == "default") {
-          annotate("segment",
-            x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        } else if (measure == "ratio") {
-          annotate("segment",
-            x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
+      {
+        if (is.numeric(nullvalue) == TRUE) {
+          annotate("rect",
+            xmin = min(nullvalue), xmax = max(nullvalue), ymin = 0, ymax = 1,
+            fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
           )
         }
-      }
-      else if (nullvalue == FALSE) {
       }
 
     # Surprisal Curve ------------------------------------------------------
@@ -239,13 +234,13 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
       geom_point(data = interval, mapping = aes(x = limits, y = (-log2(1 - levels))), size = 1.75, shape = 18) +
       geom_line(data = interval, mapping = aes(x = limits, y = (-log2(1 - levels)), group = levels), size = .30) +
       geom_ribbon(aes(x = lower.limit, ymin = max(svalue), ymax = svalue),
-        fill = fill, alpha = 0.20
+        fill = fill, alpha = 0.10
       ) +
       geom_ribbon(aes(x = upper.limit, ymin = max(svalue), ymax = svalue),
-        fill = fill, alpha = 0.20
+        fill = fill, alpha = 0.10
       ) +
       labs(
-        title = "Surprisal Function",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "S-value \n(Bits of Information)"
@@ -264,7 +259,13 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
       {
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 5))
       } +
-      scale_y_continuous(breaks = seq(0, 14, 1), expand = c(0.0075, 0.0075))
+      scale_y_continuous(breaks = seq(0, 14, 1), expand = c(0.0075, 0.0075)) +
+      if (is.numeric(nullvalue) == TRUE) {
+        annotate("rect",
+          xmin = min(nullvalue), xmax = max(nullvalue), ymin = RobustMin((interval$svalue)), ymax = RobustMax((interval$svalue)), fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+        )
+      }
+
 
 
 
@@ -278,9 +279,6 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     }
     if (is.character(measure) != TRUE) {
       stop("Error: 'measure' must be a string such as 'default' or 'ratio'.")
-    }
-    if (is.logical(nullvalue) != TRUE) {
-      stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE'.")
     }
     if (is.character(position) != TRUE) {
       stop("Error: 'position' must be a string such as 'pyramid' or 'inverted'.")
@@ -296,10 +294,10 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     }
 
     ggplot(data = data, mapping = aes(x = x)) +
-      stat_ecdf(geom = "point", color = fill, size = 0.75, shape = 5, alpha = 0.75) +
-      geom_hline(yintercept = 0.50, linetype = "dotted") +
+      stat_ecdf(geom = "point", color = darken("#e7998c", 0.2), size = 0.75, shape = 5, alpha = 0.75) +
+      geom_hline(yintercept = 0.50, linetype = "dotted", alpha = 0.5) +
       labs(
-        title = "Consonance Distribution",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "Cumulative Confidence"
@@ -317,18 +315,11 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
       scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
-      if (nullvalue == TRUE) {
-        if (measure == "default") {
-          annotate("segment",
-            x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        } else if (measure == "ratio") {
-          annotate("segment",
-            x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        }
+      if (is.numeric(nullvalue) == TRUE) {
+        annotate("rect",
+          xmin = min(nullvalue), xmax = max(nullvalue), ymin = 0, ymax = 1,
+          fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+        )
       }
 
     # Consonance Density ---------------------------------------------
@@ -347,9 +338,9 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     }
 
     ggplot(data = data, mapping = aes(x = x)) +
-      geom_density(fill = fill, alpha = 0.20) +
+      geom_density(fill = fill, color = color, alpha = 0.20) +
       labs(
-        title = "Consonance Density",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "Density"
@@ -367,18 +358,11 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
       scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
-      if (nullvalue == TRUE) {
-        if (measure == "default") {
-          annotate("segment",
-            x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        } else if (measure == "ratio") {
-          annotate("segment",
-            x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        }
+      if (is.numeric(nullvalue) == TRUE) {
+        annotate("rect",
+          xmin = min(nullvalue), xmax = max(nullvalue), ymin = min(density(data$x)[["y"]]), ymax = max(density(data$x)[["y"]]),
+          fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+        )
       }
 
     # Relative Likelihood Function -----------------------------------------------------
@@ -389,9 +373,7 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     if (is.character(measure) != TRUE) {
       stop("Error: 'measure' must be a string such as 'default' or 'ratio'.")
     }
-    if (is.logical(nullvalue) != TRUE) {
-      stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE'.")
-    }
+
     if (is.character(title) != TRUE) {
       stop("Error: 'title' must be a string.")
     }
@@ -404,9 +386,9 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
 
     ggplot(data = data, mapping = aes(x = values, y = support)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(support), ymax = support), fill = "#239a98", alpha = 0.20) +
+      geom_ribbon(aes(x = values, ymin = min(support), ymax = support), fill = fill, color = color, alpha = 0.10) +
       labs(
-        title = "Relative Likelihood Function",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "Relative Likelihood"
@@ -424,20 +406,12 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
       scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
-      if (nullvalue == TRUE) {
-        if (measure == "default") {
-          annotate("segment",
-            x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        } else if (measure == "ratio") {
-          annotate("segment",
-            x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        }
+      if (is.numeric(nullvalue) == TRUE) {
+        annotate("rect",
+          xmin = min(nullvalue), xmax = max(nullvalue), ymin = 0, ymax = 1,
+          fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+        )
       }
-
     # Log-Likelihood Function -----------------------------------------------------
   } else if (type == "l2") {
     if (ncol(data) != 5) {
@@ -446,9 +420,7 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     if (is.character(measure) != TRUE) {
       stop("Error: 'measure' must be a string such as 'default' or 'ratio'.")
     }
-    if (is.logical(nullvalue) != TRUE) {
-      stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE'.")
-    }
+
     if (is.character(title) != TRUE) {
       stop("Error: 'title' must be a string.")
     }
@@ -461,9 +433,9 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
 
     ggplot(data = data, mapping = aes(x = values, y = loglikelihood)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood), fill = "#239a98", alpha = 0.20) +
+      geom_ribbon(aes(x = values, ymin = min(loglikelihood), ymax = loglikelihood), fill = fill, color = color, alpha = 0.10) +
       labs(
-        title = "Log-Likelihood Function",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "Log-Likelihood"
@@ -481,18 +453,11 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
       scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
-      if (nullvalue == TRUE) {
-        if (measure == "default") {
-          annotate("segment",
-            x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        } else if (measure == "ratio") {
-          annotate("segment",
-            x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        }
+      if (is.numeric(nullvalue) == TRUE) {
+        annotate("rect",
+          xmin = min(nullvalue), xmax = max(nullvalue), ymin = RobustMin(data$loglikelihood), ymax = RobustMax(data$loglikelihood),
+          fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+        )
       }
 
     # Likelihood Function -----------------------------------------------------
@@ -503,9 +468,7 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     if (is.character(measure) != TRUE) {
       stop("Error: 'measure' must be a string such as 'default' or 'ratio'.")
     }
-    if (is.logical(nullvalue) != TRUE) {
-      stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE'.")
-    }
+
     if (is.character(title) != TRUE) {
       stop("Error: 'title' must be a string.")
     }
@@ -518,9 +481,9 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
 
     ggplot(data = data, mapping = aes(x = values, y = likelihood)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = min(likelihood), ymax = likelihood), fill = "#239a98", alpha = 0.20) +
+      geom_ribbon(aes(x = values, ymin = min(likelihood), ymax = likelihood), fill = fill, color = color, alpha = 0.10) +
       labs(
-        title = "Likelihood Function",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "Likelihood"
@@ -538,18 +501,11 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
       scale_y_continuous(expand = expansion(mult = c(0.01, 0.05)), breaks = scales::pretty_breaks(n = 10)) +
-      if (nullvalue == TRUE) {
-        if (measure == "default") {
-          annotate("segment",
-            x = 0, xend = 0, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        } else if (measure == "ratio") {
-          annotate("segment",
-            x = 1, xend = 1, y = 0, yend = 1,
-            color = "#990000", alpha = 0.4, size = .75, linetype = 3
-          )
-        }
+      if (is.numeric(nullvalue) == TRUE) {
+        annotate("rect",
+          xmin = min(nullvalue), xmax = max(nullvalue), ymin = 0, ymax = RobustMax(data$likelihood),
+          fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+        )
       }
 
     # Deviance Function -----------------------------------------------------
@@ -560,9 +516,7 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
     if (is.character(measure) != TRUE) {
       stop("Error: 'measure' must be a string such as 'default' or 'ratio'.")
     }
-    if (is.logical(nullvalue) != TRUE) {
-      stop("Error: 'nullvalue' must be a logical statement such as 'TRUE' or 'FALSE'.")
-    }
+
     if (is.character(title) != TRUE) {
       stop("Error: 'title' must be a string.")
     }
@@ -575,9 +529,9 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
 
     ggplot(data = data, mapping = aes(x = values, y = deviancestat)) +
       geom_line() +
-      geom_ribbon(aes(x = values, ymin = deviancestat, ymax = max(deviancestat)), fill = "#239a98", alpha = 0.20) +
+      geom_ribbon(aes(x = values, ymin = deviancestat, ymax = max(deviancestat)), fill = fill, color = color, alpha = 0.10) +
       labs(
-        title = "Deviance Function",
+        title = title,
         subtitle = subtitle,
         x = xaxis,
         y = "Deviance Statistic"
@@ -594,7 +548,15 @@ ggcurve <- function(data, type = "c", measure = "default", levels = 0.95, nullva
       {
         if (measure == "ratio") scale_x_log10(breaks = scales::pretty_breaks(n = 10))
       } +
-      scale_y_continuous(breaks = scales::pretty_breaks(n = 10), expand = c(0.0075, 0.0075))
+      scale_y_continuous(breaks = scales::pretty_breaks(n = 10), expand = c(0.0075, 0.0075)) +
+      {
+        if (is.numeric(nullvalue) == TRUE) {
+          annotate("rect",
+            xmin = min(nullvalue), xmax = max(nullvalue), ymin = 0, ymax = RobustMax(data$deviancestat),
+            fill = "#d46c5b", color = "#d46c5b", alpha = 0.05, linetype = 3, size = 0.2
+          )
+        }
+      }
   }
 }
 
